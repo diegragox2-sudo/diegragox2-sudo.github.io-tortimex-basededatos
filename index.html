@@ -95,11 +95,11 @@ input:focus,select:focus{outline:3px solid var(--green)}
 <script>
 /* ---------- Datos ---------- */
 /* Pega aquí los datos de Supabase (ver instrucciones). Vacío = modo local en este aparato. */
-const SUPA_URL='';   // ej. https://abcdxyz.supabase.co
-const SUPA_KEY='';   // la clave "anon public" (o "publishable")
+const SUPA_URL='https://iefmryzsymntaepynvmd.supabase.co';   // ej. https://abcdxyz.supabase.co
+const SUPA_KEY='sb_publishable_x3fZ5XyKSpvZDBu3Lyd7pQ_2oeBaRX9';   // la clave "anon public" (o "publishable")
 const API_URL=SUPA_URL&&SUPA_KEY?SUPA_URL:'';
 const rpc=async(fn,body)=>{
-  const r=await fetch(SUPA_URL.replace(/\/$/,'')+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const r=await fetch(SUPA_URL.replace(/\/$/,'')+'/rest/v1/rpc/'+fn,{method:'POST',headers:Object.assign({'apikey':SUPA_KEY,'Content-Type':'application/json'},SUPA_KEY.startsWith('sb_')?{}:{'Authorization':'Bearer '+SUPA_KEY}),body:JSON.stringify(body)});
   if(!r.ok)throw 'http '+r.status;
   return r.json();
 };
