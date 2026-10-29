@@ -11,17 +11,17 @@
 <style>
 :root{--bg:#000;--card:#111814;--green:#10b981;--red:#e63946;--txt:#fff;--mut:#9aa8a0;--line:#26332b}
 *{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;font-size:112.5%}
 body{background:var(--bg);color:var(--txt);font-family:Figtree,system-ui,sans-serif;font-weight:500;min-height:100vh;padding-bottom:90px}
 .franja{height:8px;background:linear-gradient(90deg,var(--green) 0 33.3%,#fff 33.3% 66.6%,var(--red) 66.6%)}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 6px;max-width:760px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 6px;max-width:960px;margin:0 auto}
 .marca{font-family:'Lilita One',cursive;font-size:1.9rem;letter-spacing:.02em;color:#fff;-webkit-text-stroke:2px #000;paint-order:stroke fill;text-shadow:3px 3px 0 var(--red)}
 .marca small{display:block;font-family:Figtree;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--green);text-shadow:none;-webkit-text-stroke:0;font-weight:800}
 .fecha{font-size:.8rem;color:var(--mut);text-align:right}
-main{max-width:760px;margin:0 auto;padding:10px 16px}
+main{max-width:960px;margin:0 auto;padding:10px 16px}
 nav{position:fixed;left:0;right:0;bottom:0;background:#000;border-top:3px solid #fff;display:flex;justify-content:center;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
-nav .in{display:flex;width:100%;max-width:760px}
-nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 9px;font:800 .6rem Figtree;letter-spacing:.02em;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav .in{display:flex;width:100%;max-width:960px}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 9px;font:800 .54rem Figtree;letter-spacing:.01em;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
 nav button svg{width:22px;height:22px;fill:currentColor}
 nav button.on{color:var(--green)}
 h2{font-family:'Lilita One';font-weight:400;font-size:1.5rem;letter-spacing:.02em;margin:10px 0 10px}
@@ -63,7 +63,7 @@ input:focus,select:focus{outline:3px solid var(--green)}
 .chips button.on{background:var(--green);border-color:var(--green);color:#000}
 .tag{font-size:.7rem;font-weight:800;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
 .tag.venta{background:var(--green);color:#000}.tag.entrada{background:#fff;color:#000}.tag.salida{background:var(--red);color:#fff}
-.tag.py{background:var(--red);color:#fff}.tag.tr{background:#fff;color:#000}.tag.cr{background:#f4a261;color:#000}
+.tag.cl{background:#a78bfa;color:#000}.tag.py{background:var(--red);color:#fff}.tag.tr{background:#fff;color:#000}.tag.cr{background:#f4a261;color:#000}
 .del{background:none;border:0;color:var(--mut);font-size:1.2rem;cursor:pointer;padding:4px 8px}
 .total{position:sticky;bottom:78px;background:#000;border:3px solid #fff;border-radius:14px;box-shadow:5px 5px 0 var(--red);padding:12px;margin-top:14px;display:flex;align-items:center;gap:12px}
 .total div{flex:1}.total b{font-family:'Lilita One';font-weight:400;font-size:1.6rem;display:block;line-height:1}
@@ -74,7 +74,7 @@ input:focus,select:focus{outline:3px solid var(--green)}
 .toast.on{opacity:1;transform:translateX(-50%)}
 .toast.err{background:var(--red);color:#fff}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.edit{display:grid;grid-template-columns:1fr 64px 64px 50px;gap:6px;padding:9px 0;border-bottom:1px solid var(--line);align-items:center}
+.edit{display:grid;grid-template-columns:1fr 76px 76px;gap:6px;padding:9px 0;border-bottom:1px solid var(--line);align-items:center}
 .edit input{padding:8px 4px;font-size:.88rem;text-align:center}
 .edit .n{font-weight:800;font-size:.85rem}
 .cab{font-size:.64rem;color:var(--mut);letter-spacing:.06em;text-transform:uppercase;font-weight:800}
@@ -85,9 +85,35 @@ input:focus,select:focus{outline:3px solid var(--green)}
 .resu{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-weight:700}
 .resu:last-child{border-bottom:0}
 .resu.t{font-family:'Lilita One';font-weight:400;font-size:1.25rem;border-top:2px solid #fff;margin-top:4px;padding-top:10px}
+.pago{background:var(--card);border:3px solid #fff;border-radius:14px;box-shadow:5px 5px 0 var(--green);padding:12px;margin-top:14px}
+.pago .top{display:flex;gap:10px;align-items:center}
+.pago .top input{flex:1;font-size:1.2rem;font-weight:800;padding:10px}
+.pago .top span{font-size:.72rem;color:var(--mut);font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.bill{display:flex;gap:6px;margin-top:10px}
+.bill button{flex:1;padding:9px 2px;border-radius:10px;border:2px solid #fff;background:#000;color:#fff;font:800 .85rem Figtree;cursor:pointer}
+.bill button.on{background:var(--green);border-color:var(--green);color:#000}
+.vuelto{text-align:center;font-family:'Lilita One';font-size:1.7rem;margin-top:12px;padding:10px;border-radius:12px;border:3px solid #fff;background:#000}
+.vuelto small{display:block;font-family:Figtree;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);font-weight:800}
+.vuelto.ok{background:var(--green);color:#000}.vuelto.ok small{color:#000}
+.vuelto.mal{background:var(--red);color:#fff}.vuelto.mal small{color:#fff}
 .dif{text-align:center;font-family:'Lilita One';font-size:1.35rem;padding:10px;border-radius:12px;border:3px solid #fff;margin-top:10px}
-.dif.ok{background:var(--green);color:#000}.dif.mal{background:var(--red);color:#fff}
+.dif.cero{background:#000;color:#fff}.dif.ok{background:var(--green);color:#000}.dif.mal{background:var(--red);color:#fff}
+#canal{display:grid;grid-template-columns:1fr 1fr;gap:8px}#canal button{padding:14px 4px;font-size:.8rem}
 #prev{width:100%;border:3px solid #fff;border-radius:10px;background:#fff;margin-top:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center;z-index:40}
+.modal.hide{display:none}
+.hoja{width:100%;max-width:640px;background:var(--card);border:3px solid #fff;border-bottom:0;border-radius:20px 20px 0 0;box-shadow:0 -5px 0 var(--green);padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+.hoja h2{margin:0 0 4px}
+.hoja .tt{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding:6px 0 12px;margin-bottom:6px}
+.hoja .tt span{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);font-weight:800}
+.hoja .tt b{font-family:'Lilita One';font-weight:400;font-size:2.2rem;line-height:1}
+.bill{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}
+.bill button{padding:13px 4px;border-radius:10px;border:2px solid #fff;background:#000;color:#fff;font:800 1.05rem Figtree;cursor:pointer}
+.bill button.ex{background:var(--green);border-color:var(--green);color:#000}
+.bill button:active{transform:scale(.97)}
+.vuelto{text-align:center;font-family:'Lilita One';font-size:2rem;padding:12px;border-radius:14px;border:3px solid #fff;margin:12px 0;line-height:1.1}
+.vuelto small{display:block;font-family:Figtree;font-weight:800;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:2px}
+.vuelto.ok{background:var(--green);color:#000}.vuelto.mal{background:var(--red);color:#fff}.vuelto.nada{background:#000;color:var(--mut);font-size:1.1rem}
 .hide{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -101,6 +127,17 @@ input:focus,select:focus{outline:3px solid var(--green)}
 <main id="vista"></main>
 <nav><div class="in" id="nav"></div></nav>
 <div class="toast" id="toast" role="status"></div>
+<div class="modal hide" id="cobro" role="dialog" aria-modal="true" aria-label="Cobro">
+  <div class="hoja">
+    <h2>Cobrar</h2>
+    <div class="tt"><span>Total a cobrar</span><b id="cb-total">Q0</b></div>
+    <label for="cb-paga" style="margin-top:6px">Paga con</label>
+    <input id="cb-paga" inputmode="decimal" placeholder="Q" autocomplete="off">
+    <div class="bill" id="cb-bill"></div>
+    <div class="vuelto nada" id="cb-vuelto">Escribe con cuánto paga</div>
+    <div class="grid2"><button class="btn g" id="cb-no" style="border:3px solid #fff">Cancelar</button><button class="btn" id="cb-ok">Confirmar</button></div>
+  </div>
+</div>
 
 <script>
 /* ---------- Conexión (Supabase) ---------- */
@@ -116,7 +153,9 @@ const rpc=async(fn,body)=>{
 const KEY='tortimex-inventario-v3',KQ='tortimex-cola-v3',KP='tortimex-pin',KR='tortimex-resp';
 
 /* ---------- Catálogo (precio tienda, precio Pedidos Ya) ---------- */
-const CATS=['Tortilla','Frituras','Lácteos','Bebidas'];
+const CATS=['Tortilla','Clientes','Frituras','Lácteos','Bebidas'];
+const TCATS=CATS.filter(c=>c!=='Clientes');
+const CLIENTES=[['Cliente 1','Clientes',5.5,null],['Cliente 2','Clientes',6,null],['Cliente 3','Clientes',7,null],['Cliente 4','Clientes',8,null]];
 const SEED=[
  ['Tortilla 1/2 lb','Tortilla',5,5],['Tortilla 1 lb','Tortilla',10,10],
  ['Tostada #10','Frituras',10,10.5],['Tostada #12','Frituras',14,17.5],['Tostada #14','Frituras',15,19],['Tostada #16','Frituras',18,22.5],
@@ -126,13 +165,14 @@ const SEED=[
  ['Queso Seco','Lácteos',13,15],['Queso Pita','Lácteos',22,25.5],['Queso Fresco','Lácteos',12,null],
  ['Coca-Cola lata','Bebidas',6,8],['Coca-Cola 2.0 lts','Bebidas',20,25.5],['ManiMax','Bebidas',13,15]
 ];
-const CANALES={tienda:'Tienda',pedidosya:'Pedidos Ya',transferencia:'Transferencia',credito:'Crédito'};
-const CTAG={tienda:'',pedidosya:'py',transferencia:'tr',credito:'cr'};
+const CANALES={tienda:'Tienda',pedidosya:'Pedidos Ya',transferencia:'Transferencia',tarjeta:'Tarjeta de crédito'};
+const CANAL_LBL=Object.assign({credito:'Tortilla al crédito'},CANALES);
+const CTAG={tienda:'',pedidosya:'py',transferencia:'tr',tarjeta:'cr',credito:'cl'};
 
 let S=cargar(),COLA=cargarCola(),estadoRed=API_URL?'off':'local';
 function cargar(){
   try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.productos){d.cortes=d.cortes||{};return d}}catch(e){}
-  return {productos:SEED.map((p,i)=>({id:'p'+(i+1),nombre:p[0],cat:p[1],precio:p[2],pp:p[3],min:5})),mov:[],cortes:{}};
+  return {productos:SEED.map((p,i)=>({id:'p'+(i+1),nombre:p[0],cat:p[1],precio:p[2],pp:p[3],min:0})).concat(CLIENTES.map((p,i)=>({id:'c'+(i+1),nombre:p[0],cat:p[1],precio:p[2],pp:p[3],min:0}))),mov:[],cortes:{}};
 }
 function cargarCola(){try{return JSON.parse(localStorage.getItem(KQ))||[]}catch(e){return []}}
 function guardar(){try{localStorage.setItem(KEY,JSON.stringify(S));localStorage.setItem(KQ,JSON.stringify(COLA))}catch(e){aviso('No se pudo guardar en este navegador',1)}}
@@ -167,7 +207,12 @@ async function sync(){
     }else{
       const antes=JSON.stringify(S),nuevo={productos:d.productos,mov:d.mov,cortes:d.cortes||{}};
       COLA.forEach(o=>aplicar(nuevo,o));
-      S=nuevo;guardar();
+      S=nuevo;
+      if(!S.productos.some(p=>p.cat==='Clientes')){ // catálogo viejo: agregar la sección Clientes
+        S.productos=S.productos.concat(CLIENTES.map((p,i)=>({id:'c'+(i+1),nombre:p[0],cat:p[1],precio:p[2],pp:p[3],min:0})));
+        COLA.push({op:'setProductos',productos:copia(S.productos)});setTimeout(sync,300);
+      }
+      guardar();
       if(antes!==JSON.stringify(S))refrescar();
     }
     estadoRed='ok';
@@ -192,8 +237,9 @@ const num=v=>{const x=parseFloat(String(v).replace(',','.'));return isNaN(x)?0:x
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const prod=id=>S.productos.find(p=>p.id===id);
 const stockDe=id=>S.mov.reduce((a,m)=>m.pid!==id?a:a+(m.tipo==='entrada'?m.cant:-m.cant),0);
-const estado=p=>{const s=stockDe(p.id);return s<=0?'cero':s<=p.min?'bajo':''};
-const precioDe=(p,canal)=>canal==='pedidosya'&&p.pp!=null&&p.pp!==''?+p.pp:+p.precio;
+const esCliente=p=>!!p&&p.cat==='Clientes';
+const estado=p=>esCliente(p)?'':(stockDe(p.id)<=0?'cero':'');
+const precioDe=(p,canal)=>!esCliente(p)&&canal==='pedidosya'&&p.pp!=null&&p.pp!==''?+p.pp:+p.precio;
 const canalDe=m=>m.canal||'tienda';
 function aviso(t,err){const e=document.getElementById('toast');e.textContent=t;e.className='toast on'+(err?' err':'');clearTimeout(aviso.t);aviso.t=setTimeout(()=>e.className='toast',2200)}
 function keep(f){const y=scrollY;f();scrollTo(0,y)}
@@ -204,7 +250,8 @@ function cierre(f){
   const ventas=ms.filter(m=>m.tipo==='venta');
   const tienda={};
   ventas.filter(m=>canalDe(m)==='tienda').forEach(m=>{const x=tienda[m.pid]=tienda[m.pid]||{c:0,t:0};x.c+=m.cant;x.t+=m.cant*m.precio});
-  const tickets=c=>{const g={};ventas.filter(m=>canalDe(m)===c).forEach(m=>{const k=m.ticket||m.id;const x=g[k]=g[k]||{ts:m.ts,nota:m.nota||'',m:0};x.m+=m.cant*m.precio});return Object.values(g).sort((a,b)=>a.ts-b.ts).map(x=>({l:x.nota||('Pedido '+hora(x.ts)),m:x.m}))};
+  const tickets=c=>{const g={};ventas.filter(m=>canalDe(m)===c).forEach(m=>{const k=m.ticket||m.id;const x=g[k]=g[k]||{ts:m.ts,nota:m.nota||'',m:0,it:[]};x.m+=m.cant*m.precio;x.it.push((prod(m.pid)?prod(m.pid).nombre:'?')+' ×'+m.cant)});
+    return Object.values(g).sort((a,b)=>a.ts-b.ts).map(x=>({l:c==='credito'?((x.nota?x.nota+' · ':'')+x.it.join(', ')):(x.nota||((c==='tarjeta'?'Venta ':'Pedido ')+hora(x.ts))),m:x.m}))};
   const entr={};ms.filter(m=>m.tipo==='entrada').forEach(m=>{entr[m.pid]=(entr[m.pid]||0)+m.cant});
   const produccion=Object.entries(entr).map(([id,c])=>(prod(id)?prod(id).nombre:'(borrado)')+' · '+c);
   const desperdicio=ms.filter(m=>m.tipo==='salida').reduce((a,m)=>a+m.cant,0);
@@ -212,11 +259,11 @@ function cierre(f){
   const sum=a=>a.reduce((s,x)=>s+(+x.m||0),0);
   const gastos=(datos.gastos||[]).filter(g=>g.c||g.m);
   const tot1=Object.values(tienda).reduce((a,x)=>a+x.t,0);
-  const py=tickets('pedidosya'),tr=tickets('transferencia'),cr=tickets('credito');
-  const tg=sum(gastos),tpy=sum(py),ttr=sum(tr),tcr=sum(cr);
+  const py=tickets('pedidosya'),tr=tickets('transferencia'),tj=tickets('tarjeta'),cr=tickets('credito');
+  const tg=sum(gastos),tpy=sum(py),ttr=sum(tr),ttj=sum(tj),tcr=sum(cr);
   const ef=num(datos.ef);
-  return {f,datos,tienda,produccion,desperdicio,gastos,py,tr,cr,tot1,tg,tpy,ttr,tcr,
-    ventaTotal:tot1+tg+tpy+ttr+tcr, efGastos:ef+tg, dif:ef+tg-tot1, ef};
+  return {f,datos,tienda,produccion,desperdicio,gastos,py,tr,tj,cr,tot1,tg,tpy,ttr,ttj,tcr,
+    ventaTotal:tot1+tg+tpy+ttr+ttj+tcr, efGastos:ef+tg, esperado:tot1+tcr, dif:Math.round((ef+tg-(tot1+tcr))*100)/100, ef};
 }
 
 /* ---------- Navegación ---------- */
@@ -244,10 +291,10 @@ let fechaRes=dia();
 function vResumen(){
   const c=cierre(fechaRes);
   const ms=S.mov.filter(m=>dia(new Date(m.ts))===fechaRes);
-  const vend=c.tot1+c.tpy+c.ttr+c.tcr;
+  const vend=c.tot1+c.tpy+c.ttr+c.ttj+c.tcr;
   const uni=ms.filter(m=>m.tipo==='venta').reduce((a,m)=>a+m.cant,0);
   const ent=ms.filter(m=>m.tipo==='entrada').reduce((a,m)=>a+m.cant,0);
-  const bajos=S.productos.filter(p=>estado(p)).sort((a,b)=>stockDe(a.id)-stockDe(b.id));
+  const agot=S.productos.filter(p=>estado(p)).sort((a,b)=>stockDe(a.id)-stockDe(b.id));
   return `<h2>Resumen del día</h2>
   <input type="date" id="fres" value="${fechaRes}" max="${dia()}" aria-label="Fecha">
   <div class="kpis" style="margin-top:14px">
@@ -260,25 +307,29 @@ function vResumen(){
    <div class="resu"><span>Tienda</span><span>${Q2(c.tot1)}</span></div>
    <div class="resu"><span>Pedidos Ya</span><span>${Q2(c.tpy)}</span></div>
    <div class="resu"><span>Transferencia</span><span>${Q2(c.ttr)}</span></div>
-   <div class="resu"><span>Crédito</span><span>${Q2(c.tcr)}</span></div>
+   <div class="resu"><span>Venta con tarjeta de crédito</span><span>${Q2(c.ttj)}</span></div>
+   <div class="resu"><span>Tortilla al crédito</span><span>${Q2(c.tcr)}</span></div>
   </div>
-  <h3>Stock bajo o agotado</h3>
-  <div class="panel r">${bajos.map(p=>`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b><small>Mínimo: ${p.min}</small></div><span class="stock ${estado(p)}">${stockDe(p.id)} en stock</span></div>`).join('')||'<div class="vacio">Todo en orden ✔</div>'}</div>`;
+  <h3>Productos agotados</h3>
+  <div class="panel r">${agot.map(p=>`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b></div><span class="stock cero">${stockDe(p.id)} en stock</span></div>`).join('')||'<div class="vacio">Ninguno agotado ✔</div>'}</div>`;
 }
 function bResumen(){document.getElementById('fres').onchange=e=>{fechaRes=e.target.value||dia();render()}}
 
 /* ---------- Vender ---------- */
 let carro={},catV='Todos',canalV='tienda',notaV='';
 const cats=()=>['Todos',...CATS.filter(c=>S.productos.some(p=>p.cat===c)),...[...new Set(S.productos.map(p=>p.cat))].filter(c=>!CATS.includes(c))];
+const totalCarro=()=>Object.entries(carro).reduce((a,[id,c])=>a+c*precioDe(prod(id),canalV),0);
 function vVender(){
   const lista=S.productos.filter(p=>catV==='Todos'||p.cat===catV);
-  const tot=Object.entries(carro).reduce((a,[id,c])=>a+c*precioDe(prod(id),canalV),0),n=Object.values(carro).reduce((a,c)=>a+c,0);
-  const ph=canalV==='transferencia'?'Quién transfirió / referencia':canalV==='credito'?'Nombre del cliente':canalV==='pedidosya'?'N.º de pedido (opcional)':'Nota (opcional)';
+  const tot=totalCarro(),n=Object.values(carro).reduce((a,c)=>a+c,0);
+  const hayCli=Object.keys(carro).some(id=>esCliente(prod(id)));
+  const ph=hayCli?'Nombre del cliente':canalV==='transferencia'?'Quién transfirió / referencia':canalV==='tarjeta'?'Referencia (opcional)':canalV==='pedidosya'?'N.º de pedido (opcional)':'Nota (opcional)';
   return `<h2>Registrar venta</h2>
   <div class="seg" id="canal">${Object.entries(CANALES).map(([k,v])=>`<button data-k="${k}" class="${k===canalV?'on':''} ${k==='pedidosya'?'py':''}">${v}</button>`).join('')}</div>
   <input id="vn" maxlength="60" placeholder="${ph}" value="${esc(notaV)}" style="margin:10px 0" aria-label="Nota">
   <div class="chips">${cats().map(c=>`<button data-c="${esc(c)}" class="${c===catV?'on':''}">${esc(c)}</button>`).join('')}</div>
-  <div class="panel">${lista.map(p=>`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b><small>${Q(precioDe(p,canalV))} · <span class="stock ${estado(p)}" style="padding:0 7px;font-size:.72rem">${stockDe(p.id)}</span></small></div>
+  ${catV==='Clientes'?'<p class="nota" style="margin:-4px 0 10px">Estas ventas se anotan en <b>Tortilla al crédito</b> en el cierre del día.</p>':''}
+  <div class="panel">${lista.map(p=>`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b><small>${Q(precioDe(p,canalV))}${esCliente(p)?'':` · <span class="stock ${estado(p)}" style="padding:0 7px;font-size:.72rem">${stockDe(p.id)}</span>`}</small></div>
    <div class="cant"><button data-m="${p.id}" aria-label="Quitar">−</button><output>${carro[p.id]||0}</output><button class="mas" data-p="${p.id}" aria-label="Agregar">+</button></div></div>`).join('')}</div>
   <div class="total"><div><span>${n} producto${n===1?'':'s'} · ${CANALES[canalV]}</span><b>${Q(tot)}</b></div><button class="btn r" id="cobrar" ${n?'':'disabled'}>Registrar</button></div>`;
 }
@@ -290,14 +341,50 @@ function bVender(){
   v.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{carro[b.dataset.p]=(carro[b.dataset.p]||0)+1;keep(()=>render())});
   v.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const id=b.dataset.m;if(carro[id]){carro[id]--;if(!carro[id])delete carro[id]}keep(()=>render())});
   document.getElementById('cobrar').onclick=()=>{
-    const faltan=Object.entries(carro).filter(([id,c])=>c>stockDe(id)).map(([id])=>prod(id).nombre);
-    if(faltan.length&&!confirm('No hay stock suficiente de:\n• '+faltan.join('\n• ')+'\n\n¿Registrar la venta de todos modos?'))return;
-    const ts=Date.now(),tk=nid(),nota=notaV.trim();
-    const t=Object.entries(carro).reduce((a,[id,c])=>a+c*precioDe(prod(id),canalV),0);
-    Object.entries(carro).forEach(([id,c],i)=>op({op:'addMov',mov:{id:nid(),ts:ts+i,pid:id,tipo:'venta',cant:c,precio:precioDe(prod(id),canalV),nota,canal:canalV,ticket:tk}}));
-    carro={};notaV='';render();aviso(CANALES[canalV]+' · '+Q(t));
+    const tot=totalCarro();
+    if(canalV==='tienda')abrirCobro(tot,registrar);else registrar();
   };
 }
+function registrar(vuelto){
+  const faltan=Object.entries(carro).filter(([id,c])=>!esCliente(prod(id))&&c>stockDe(id)).map(([id])=>prod(id).nombre);
+  if(faltan.length&&!confirm('No hay stock suficiente de:\n• '+faltan.join('\n• ')+'\n\n¿Registrar la venta de todos modos?'))return;
+  const ts=Date.now(),tk=nid(),nota=notaV.trim(),t=totalCarro();
+  Object.entries(carro).forEach(([id,c],i)=>{const p=prod(id);
+    op({op:'addMov',mov:{id:nid(),ts:ts+i,pid:id,tipo:'venta',cant:c,precio:precioDe(p,canalV),nota,canal:esCliente(p)?'credito':canalV,ticket:tk}})});
+  carro={};notaV='';render();
+  aviso(CANALES[canalV]+' · '+Q(t)+(vuelto>0?' · Vuelto '+Q(vuelto):''));
+}
+
+/* ---------- Calculadora de cobro ---------- */
+let cobroTotal=0,cobroOk=null;
+function abrirCobro(total,ok){
+  cobroTotal=total;cobroOk=ok;
+  const m=document.getElementById('cobro');
+  document.getElementById('cb-total').textContent=Q2(total);
+  const inp=document.getElementById('cb-paga');inp.value='';
+  const billetes=[...new Set([1,5,10,20,50,100,200].filter(b=>b>=total))].slice(0,5);
+  document.getElementById('cb-bill').innerHTML=`<button class="ex" data-v="${total}">Exacto</button>`+billetes.map(b=>`<button data-v="${b}">Q${b}</button>`).join('');
+  pintarCobro();m.classList.remove('hide');
+  setTimeout(()=>inp.focus(),50);
+}
+function pintarCobro(){
+  const v=document.getElementById('cb-vuelto'),ok=document.getElementById('cb-ok');
+  const raw=document.getElementById('cb-paga').value,paga=num(raw),dif=Math.round((paga-cobroTotal)*100)/100;
+  if(raw.trim()===''){v.className='vuelto nada';v.textContent='Escribe con cuánto paga';ok.disabled=false;return}
+  if(dif<0){v.className='vuelto mal';v.innerHTML='<small>Falta</small>'+Q2(-dif);ok.disabled=true}
+  else if(dif===0){v.className='vuelto ok';v.innerHTML='<small>Vuelto</small>Q0.00 · Pago exacto';ok.disabled=false}
+  else{v.className='vuelto ok';v.innerHTML='<small>Dar de vuelto</small>'+Q2(dif);ok.disabled=false}
+}
+function cerrarCobro(){document.getElementById('cobro').classList.add('hide')}
+document.getElementById('cb-paga').addEventListener('input',pintarCobro);
+document.getElementById('cb-bill').addEventListener('click',e=>{const b=e.target.closest('button');if(b){document.getElementById('cb-paga').value=b.dataset.v;pintarCobro()}});
+document.getElementById('cb-no').onclick=cerrarCobro;
+document.getElementById('cobro').addEventListener('click',e=>{if(e.target.id==='cobro')cerrarCobro()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cerrarCobro()});
+document.getElementById('cb-ok').onclick=()=>{
+  const raw=document.getElementById('cb-paga').value,paga=num(raw),vuelto=raw.trim()===''?0:Math.round((paga-cobroTotal)*100)/100;
+  cerrarCobro();if(cobroOk)cobroOk(vuelto);
+};
 
 /* ---------- Entradas / salidas ---------- */
 let tipoM='entrada';
@@ -306,7 +393,7 @@ function vMov(){
   <div class="panel">
    <div class="seg" id="tipo"><button data-t="entrada" class="${tipoM==='entrada'?'on':''}">Entrada</button><button data-t="salida" class="${tipoM==='salida'?'on s':''}">Salida / desperdicio</button></div>
    <label for="mp">Producto</label>
-   <select id="mp">${S.productos.map(p=>`<option value="${p.id}">${esc(p.nombre)} — stock ${stockDe(p.id)}</option>`).join('')}</select>
+   <select id="mp">${S.productos.filter(p=>!esCliente(p)).map(p=>`<option value="${p.id}">${esc(p.nombre)} — stock ${stockDe(p.id)}</option>`).join('')}</select>
    <label for="mc">Cantidad</label>
    <input id="mc" type="number" inputmode="numeric" min="1" step="1" placeholder="0">
    <label for="mn">Nota (opcional)</label>
@@ -360,24 +447,27 @@ function vCierre(){
   <div class="panel">${lista(c.py)}<div class="resu t"><span>TOTAL</span><span>${Q2(c.tpy)}</span></div></div>
   <h3>Transferencia</h3>
   <div class="panel">${lista(c.tr)}<div class="resu t"><span>TOTAL</span><span>${Q2(c.ttr)}</span></div></div>
+  <h3>Venta con tarjeta de crédito</h3>
+  <div class="panel">${lista(c.tj)}<div class="resu t"><span>TOTAL</span><span>${Q2(c.ttj)}</span></div></div>
   <h3>Tortilla al crédito</h3>
   <div class="panel">${lista(c.cr)}<div class="resu t"><span>TOTAL</span><span>${Q2(c.tcr)}</span></div></div>
-  <p class="nota" style="margin:-6px 0 14px">Pedidos Ya, transferencia y crédito salen solos de las ventas que registras en “Vender” con ese canal.</p>
+  <p class="nota" style="margin:-6px 0 14px">Pedidos Ya, transferencia y tarjeta salen de las ventas que registras en “Vender” con ese canal. Tortilla al crédito sale de los productos de la sección “Clientes”.</p>
   <h3>Venta total del día</h3>
   <div class="panel">
    <div class="resu"><span>1. TOTAL 1 (tienda)</span><span>${Q2(c.tot1)}</span></div>
    <div class="resu"><span>2. GASTOS</span><span id="v-g">${Q2(c.tg)}</span></div>
    <div class="resu"><span>3. PEDIDOS YA</span><span>${Q2(c.tpy)}</span></div>
    <div class="resu"><span>4. TRANSFERENCIA</span><span>${Q2(c.ttr)}</span></div>
-   <div class="resu"><span>5. TORTILLA AL CRÉDITO</span><span>${Q2(c.tcr)}</span></div>
+   <div class="resu"><span>5. VENTA CON TARJETA DE CRÉDITO</span><span>${Q2(c.ttj)}</span></div>
+   <div class="resu"><span>6. TORTILLA AL CRÉDITO</span><span>${Q2(c.tcr)}</span></div>
    <div class="resu t"><span>TOTAL</span><span id="v-t">${Q2(c.ventaTotal)}</span></div></div>
   <h3>Efectivo en caja</h3>
   <div class="panel r">
    <label for="cr-ef" style="margin-top:0">Efectivo físico contado</label>
    <input id="cr-ef" inputmode="decimal" placeholder="Q" value="${d.ef==null?'':d.ef}">
    <div class="resu" style="margin-top:10px"><span>Efectivo físico + gastos</span><span id="e-eg">${Q2(c.efGastos)}</span></div>
-   <div class="resu"><span>TOTAL 1</span><span>${Q2(c.tot1)}</span></div>
-   <div class="dif" id="dif"></div></div>
+   <div class="resu"><span>TOTAL 1 + tortilla al crédito</span><span>${Q2(c.tot1+c.tcr)}</span></div>
+   <div class="dif cero" id="dif"></div></div>
   <h3>Control de producto</h3>
   <div class="panel">${d.control.map((k,i)=>`<div class="lin"><i>${i+1}</i><input class="k-c" data-i="${i}" placeholder="Concepto" value="${esc(k.c||'')}"><input class="k-v" data-i="${i}" placeholder="Cant." value="${esc(k.v||'')}"></div>`).join('')}</div>
   <div class="grid2"><button class="btn" id="img-c">Compartir imagen</button><button class="btn g" id="img-d" style="border:3px solid #fff">Descargar imagen</button></div>
@@ -393,12 +483,14 @@ function leerCierre(){
 }
 function pintarCierre(){
   const d=leerCierre(),c=cierre(fechaC);
-  const tg=d.gastos.reduce((a,x)=>a+(+x.m||0),0),ef=+d.ef||0,dif=ef+tg-c.tot1;
+  const tg=d.gastos.reduce((a,x)=>a+(+x.m||0),0),ef=+d.ef||0,dif=Math.round((ef+tg-(c.tot1+c.tcr))*100)/100;
   const set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t};
-  set('t-g',Q2(tg));set('v-g',Q2(tg));set('v-t',Q2(c.tot1+tg+c.tpy+c.ttr+c.tcr));set('e-eg',Q2(ef+tg));
+  set('t-g',Q2(tg));set('v-g',Q2(tg));set('v-t',Q2(c.tot1+tg+c.tpy+c.ttr+c.ttj+c.tcr));set('e-eg',Q2(ef+tg));
   const e=document.getElementById('dif');
-  if(d.ef==null){e.className='dif';e.style.background='#000';e.textContent='Escribe el efectivo contado'}
-  else{e.style.background='';e.className='dif '+(Math.abs(dif)<0.005?'ok':'mal');e.textContent=Math.abs(dif)<0.005?'Caja cuadrada':(dif<0?'FALTANTE ':'SOBRANTE ')+Q2(Math.abs(dif))}
+  if(d.ef==null){e.className='dif cero';e.textContent='Escribe el efectivo contado'}
+  else if(dif===0){e.className='dif cero';e.textContent='Caja cuadrada'}
+  else if(dif<0){e.className='dif mal';e.textContent='FALTA DINERO · '+Q2(-dif)}
+  else{e.className='dif ok';e.textContent='SOBRA DINERO · '+Q2(dif)}
 }
 let tG;
 function guardarCierre(){
@@ -443,7 +535,7 @@ async function dibujarCorte(f){
   const cell=(x,y,w,h,t,o={})=>{
     if(o.fill){c.fillStyle=o.fill;c.fillRect(x,y,w,h)}
     c.strokeStyle='#000';c.lineWidth=o.lw||1.5;c.strokeRect(x,y,w,h);
-    if(t!==''&&t!=null){c.fillStyle='#000';c.font=`${o.bold?800:500} ${o.size||14}px Figtree,Arial,sans-serif`;c.textBaseline='middle';
+    if(t!==''&&t!=null){c.fillStyle=o.color||'#000';c.font=`${o.bold?800:500} ${o.size||14}px Figtree,Arial,sans-serif`;c.textBaseline='middle';
       c.textAlign=o.align||'left';const px=o.align==='center'?x+w/2:o.align==='right'?x+w-7:x+7;c.fillText(String(t),px,y+h/2+1,w-12)}
   };
   const m$=v=>v?Q2(v):'';
@@ -461,7 +553,7 @@ async function dibujarCorte(f){
   const cols=[[60,'CÓDIGO'],[330,'PRODUCTO'],[100,'PRECIO TIENDA'],[100,'CANT. TIENDA'],[140,'TOTAL TIENDA']];
   let x=LX;cols.forEach(([w,t])=>{cell(x,yl,w,34,t,{bold:1,align:'center',size:12});x+=w});yl+=34;
   const rowL=(vals,o={})=>{let x=LX;cols.forEach(([w],i)=>{cell(x,yl,w,H,vals[i]==null?'':vals[i],Object.assign({align:i===1?'left':(i===0?'center':'right'),fill:o.fill,bold:o.bold},o.col&&o.col[i]||{}));x+=w});yl+=H};
-  CATS.forEach((cat,ci)=>{
+  TCATS.forEach((cat,ci)=>{
     const ps=S.productos.filter(p=>p.cat===cat);if(!ps.length)return;
     rowL([ci+1,cat],{bold:1,col:{1:{align:'left',bold:1}}});
     let sc=0,st=0;
@@ -469,7 +561,7 @@ async function dibujarCorte(f){
       rowL([ci+1+'.'+pad(i+1),p.nombre,Q2(p.precio),v.c||'',m$(v.t)],{fill:i%2===0?GR:'#fff'});});
     rowL(['','TOTAL','',sc||'',m$(st)],{bold:1,col:{1:{align:'right',bold:1}}});
   });
-  const oi=CATS.length+1;
+  const oi=TCATS.length+1;
   rowL([oi,'OTROS'],{bold:1,col:{1:{align:'left',bold:1}}});
   rowL([oi+'.1','Desperdicio','',c0.desperdicio||'',''],{fill:GR});
   cell(LX,yl,590,H,'TOTAL 1',{bold:1,align:'right'});cell(LX+590,yl,140,H,Q2(c0.tot1),{bold:1,align:'right'});yl+=H;
@@ -487,17 +579,18 @@ async function dibujarCorte(f){
   sec('GASTOS',c0.gastos,4,c0.tg);
   sec('PEDIDOS YA',c0.py,5,c0.tpy);
   sec('TRANSFERENCIA',c0.tr,4,c0.ttr);
+  sec('VENTA CON TARJETA DE CRÉDITO',c0.tj,3,c0.ttj);
   sec('TORTILLA AL CRÉDITO',c0.cr,3,c0.tcr);
   cell(RX,yr,690,H,'VENTA TOTAL DÍA',{bold:1,align:'center'});yr+=H;
-  [['TOTAL 1',c0.tot1],['GASTOS',c0.tg],['PEDIDOS YA',c0.tpy],['TRANSFERENCIA',c0.ttr],['TORTILLA AL CRÉDITO',c0.tcr]].forEach(([l,v],i)=>{
+  [['TOTAL 1',c0.tot1],['GASTOS',c0.tg],['PEDIDOS YA',c0.tpy],['TRANSFERENCIA',c0.ttr],['VENTA CON TARJETA DE CRÉDITO',c0.ttj],['TORTILLA AL CRÉDITO',c0.tcr]].forEach(([l,v],i)=>{
     cell(RX,yr,30,H,i+1,{align:'center'});cell(RX+30,yr,530,H,l,{bold:i===1||i===3});cell(RX+560,yr,130,H,m$(v),{align:'right'});yr+=H});
   cell(RX,yr,560,H,'TOTAL',{bold:1,align:'right'});cell(RX+560,yr,130,H,Q2(c0.ventaTotal),{bold:1,align:'right'});yr+=H+16;
   cell(RX,yr,690,H,'EFECTIVO EN CAJA',{bold:1,align:'center'});yr+=H;
   cell(RX,yr,30,H,1,{align:'center'});cell(RX+30,yr,530,H,'EFECTIVO FÍSICO + GASTOS');cell(RX+560,yr,130,H,d.ef==null?'':Q2(c0.efGastos),{align:'right'});yr+=H;
-  cell(RX,yr,30,H,2,{align:'center'});cell(RX+30,yr,530,H,'TOTAL 1',{bold:1});cell(RX+560,yr,130,H,Q2(c0.tot1),{align:'right'});yr+=H;
+  cell(RX,yr,30,H,2,{align:'center'});cell(RX+30,yr,530,H,'TOTAL 1 + TORTILLA AL CRÉDITO',{bold:1});cell(RX+560,yr,130,H,Q2(c0.tot1+c0.tcr),{align:'right'});yr+=H;
   const falt=d.ef!=null&&c0.dif<-0.004?-c0.dif:0,sobr=d.ef!=null&&c0.dif>0.004?c0.dif:0;
-  cell(RX,yr,30,H,3,{align:'center'});cell(RX+30,yr,110,H,'FALTANTE',{bold:1,size:13});cell(RX+140,yr,100,H,m$(falt),{align:'right',fill:falt?'#f8c9cd':null});
-  cell(RX+240,yr,220,H,'SOBRANTE',{align:'center',fill:GR,size:13});cell(RX+460,yr,100,H,'');cell(RX+560,yr,130,H,m$(sobr),{align:'right',fill:sobr?'#c8efd9':null});yr+=H+16;
+  cell(RX,yr,30,H,3,{align:'center'});cell(RX+30,yr,110,H,'FALTANTE',{bold:1,size:13});cell(RX+140,yr,100,H,m$(falt),{align:'right',bold:1,fill:falt?'#e63946':null,color:falt?'#fff':null});
+  cell(RX+240,yr,220,H,'SOBRANTE',{align:'center',fill:GR,size:13});cell(RX+460,yr,100,H,'');cell(RX+560,yr,130,H,m$(sobr),{align:'right',bold:1,fill:sobr?'#10b981':null});yr+=H+16;
   cell(RX,yr,690,H,'CONTROL DE PRODUCTO',{bold:1,align:'center'});yr+=H;
   d.control.forEach((k,i)=>{cell(RX,yr,30,H,i+1,{align:'center'});cell(RX+30,yr,400,H,(k.c||'').toUpperCase(),{size:13});cell(RX+430,yr,260,H,k.v||'',{align:'right'});yr+=H});
   /* recorte */
@@ -513,7 +606,7 @@ function vHist(){
   const ms=S.mov.filter(m=>dia(new Date(m.ts))===fechaH).sort((a,b)=>b.ts-a.ts);
   return `<h2>Historial</h2>
   <input type="date" id="fh" value="${fechaH}" max="${dia()}" aria-label="Fecha">
-  <div class="panel" style="margin-top:14px">${ms.map(m=>{const p=prod(m.pid),cn=canalDe(m);return `<div class="fila"><div class="n"><b>${esc(p?p.nombre:'(borrado)')}</b><small>${hora(m.ts)}${m.nota?' · '+esc(m.nota):''}</small></div>${m.tipo==='venta'&&cn!=='tienda'?`<span class="tag ${CTAG[cn]}">${CANALES[cn]}</span>`:''}<span class="tag ${m.tipo}">${m.tipo}</span><div style="min-width:54px;text-align:right"><b>${m.tipo==='entrada'?'+':'−'}${m.cant}</b>${m.tipo==='venta'?`<br><small style="color:var(--mut)">${Q(m.cant*m.precio)}</small>`:''}</div><button class="del" data-d="${m.id}" aria-label="Eliminar registro">✕</button></div>`}).join('')||'<div class="vacio">Sin movimientos este día</div>'}</div>
+  <div class="panel" style="margin-top:14px">${ms.map(m=>{const p=prod(m.pid),cn=canalDe(m);return `<div class="fila"><div class="n"><b>${esc(p?p.nombre:'(borrado)')}</b><small>${hora(m.ts)}${m.nota?' · '+esc(m.nota):''}</small></div>${m.tipo==='venta'&&cn!=='tienda'?`<span class="tag ${CTAG[cn]}">${CANAL_LBL[cn]}</span>`:''}<span class="tag ${m.tipo}">${m.tipo}</span><div style="min-width:54px;text-align:right"><b>${m.tipo==='entrada'?'+':'−'}${m.cant}</b>${m.tipo==='venta'?`<br><small style="color:var(--mut)">${Q(m.cant*m.precio)}</small>`:''}</div><button class="del" data-d="${m.id}" aria-label="Eliminar registro">✕</button></div>`}).join('')||'<div class="vacio">Sin movimientos este día</div>'}</div>
   <h3>Descargar</h3>
   <div class="panel r"><button class="btn g" id="xls" style="border:3px solid #fff">Excel con todos los movimientos (.xlsx)</button>
   <p class="nota">Archivo de Excel de verdad, con columnas ordenadas. Los datos quedan guardados en la base de datos; esto es solo una copia para revisar.</p></div>`;
@@ -523,11 +616,11 @@ function bHist(){
   document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{if(confirm('¿Eliminar este registro? El stock se ajustará.')){op({op:'delMov',id:b.dataset.d});render();aviso('Registro eliminado')}});
   document.getElementById('xls').onclick=()=>{
     if(!window.XLSX)return aviso('Necesita internet para generar el Excel',1);
-    const filas=S.mov.slice().sort((a,b)=>a.ts-b.ts).map(m=>({Fecha:dmy(dia(new Date(m.ts))),Hora:hora(m.ts),Tipo:m.tipo,Canal:m.tipo==='venta'?CANALES[canalDe(m)]:'',Producto:prod(m.pid)?prod(m.pid).nombre:'',Cantidad:m.cant,Precio:m.precio||'',Total:m.tipo==='venta'?m.cant*m.precio:'',Nota:m.nota||''}));
+    const filas=S.mov.slice().sort((a,b)=>a.ts-b.ts).map(m=>({Fecha:dmy(dia(new Date(m.ts))),Hora:hora(m.ts),Tipo:m.tipo,Canal:m.tipo==='venta'?CANAL_LBL[canalDe(m)]:'',Producto:prod(m.pid)?prod(m.pid).nombre:'',Cantidad:m.cant,Precio:m.precio||'',Total:m.tipo==='venta'?m.cant*m.precio:'',Nota:m.nota||''}));
     const ws=XLSX.utils.json_to_sheet(filas.length?filas:[{Fecha:'',Hora:'',Tipo:'',Canal:'',Producto:'',Cantidad:'',Precio:'',Total:'',Nota:''}]);
     ws['!cols']=[{wch:11},{wch:7},{wch:9},{wch:14},{wch:26},{wch:9},{wch:8},{wch:9},{wch:30}];
-    const st=S.productos.map(p=>({Producto:p.nombre,Categoría:p.cat,'Precio tienda':p.precio,'Precio Pedidos Ya':p.pp==null?'':p.pp,'Stock actual':stockDe(p.id),Mínimo:p.min}));
-    const ws2=XLSX.utils.json_to_sheet(st);ws2['!cols']=[{wch:26},{wch:11},{wch:13},{wch:17},{wch:12},{wch:8}];
+    const st=S.productos.filter(p=>!esCliente(p)).map(p=>({Producto:p.nombre,Categoría:p.cat,'Precio tienda':p.precio,'Precio Pedidos Ya':p.pp==null?'':p.pp,'Stock actual':stockDe(p.id)}));
+    const ws2=XLSX.utils.json_to_sheet(st);ws2['!cols']=[{wch:26},{wch:11},{wch:13},{wch:17},{wch:12}];
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Movimientos');XLSX.utils.book_append_sheet(wb,ws2,'Stock actual');
     XLSX.writeFile(wb,'tortimex-inventario-'+dia()+'.xlsx');
   };
@@ -536,9 +629,9 @@ function bHist(){
 /* ---------- Productos ---------- */
 function vProd(){
   return `<h2>Productos</h2>
-  <div class="panel"><div class="edit"><span class="cab">Producto</span><span class="cab">Tienda Q</span><span class="cab">P. Ya Q</span><span class="cab">Mín.</span></div>
-  ${S.productos.map(p=>`<div class="edit"><span class="n">${esc(p.nombre)}</span><input type="number" step="0.5" min="0" value="${p.precio}" data-pr="${p.id}" aria-label="Precio tienda"><input type="number" step="0.5" min="0" value="${p.pp==null?'':p.pp}" placeholder="—" data-pp="${p.id}" aria-label="Precio Pedidos Ya"><input type="number" min="0" value="${p.min}" data-mi="${p.id}" aria-label="Stock mínimo"></div>`).join('')}
-  <p class="nota">“P. Ya” es el precio en Pedidos Ya; si lo dejas vacío se usa el de tienda. “Mín.” es el stock a partir del cual sale la alerta.</p></div>
+  <div class="panel"><div class="edit"><span class="cab">Producto</span><span class="cab">Tienda Q</span><span class="cab">P. Ya Q</span></div>
+  ${S.productos.map(p=>`<div class="edit"><span class="n">${esc(p.nombre)}</span><input type="number" step="0.25" min="0" value="${p.precio}" data-pr="${p.id}" aria-label="Precio">${esCliente(p)?'<span></span>':`<input type="number" step="0.5" min="0" value="${p.pp==null?'':p.pp}" placeholder="—" data-pp="${p.id}" aria-label="Precio Pedidos Ya">`}</div>`).join('')}
+  <p class="nota">“P. Ya” es el precio en Pedidos Ya; si lo dejas vacío se usa el de tienda.</p></div>
   <h3>Agregar producto</h3>
   <div class="panel r"><label for="np">Nombre</label><input id="np" maxlength="50">
    <div class="grid2"><div><label for="nc">Categoría</label><input id="nc" list="cl" value="Frituras"><datalist id="cl">${CATS.map(c=>`<option>${esc(c)}`).join('')}</datalist></div><div><label for="npr">Precio tienda Q</label><input id="npr" type="number" step="0.5" min="0"></div></div>
@@ -549,11 +642,10 @@ function bProd(){
   const setP=()=>op({op:'setProductos',productos:S.productos});
   document.querySelectorAll('[data-pr]').forEach(i=>i.onchange=()=>{prod(i.dataset.pr).precio=Math.max(0,parseFloat(i.value)||0);setP();aviso('Precio actualizado')});
   document.querySelectorAll('[data-pp]').forEach(i=>i.onchange=()=>{prod(i.dataset.pp).pp=i.value===''?null:Math.max(0,parseFloat(i.value)||0);setP();aviso('Precio Pedidos Ya actualizado')});
-  document.querySelectorAll('[data-mi]').forEach(i=>i.onchange=()=>{prod(i.dataset.mi).min=Math.max(0,parseInt(i.value,10)||0);setP();aviso('Mínimo actualizado')});
   document.getElementById('addp').onclick=()=>{
     const n=document.getElementById('np').value.trim(),pr=parseFloat(document.getElementById('npr').value),pp=document.getElementById('npp').value;
     if(!n||isNaN(pr))return aviso('Falta nombre o precio',1);
-    S.productos.push({id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),nombre:n,cat:document.getElementById('nc').value.trim()||'Otros',precio:pr,pp:pp===''?null:parseFloat(pp),min:5});
+    S.productos.push({id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),nombre:n,cat:document.getElementById('nc').value.trim()||'Otros',precio:pr,pp:pp===''?null:parseFloat(pp),min:0});
     setP();render();aviso('Producto agregado');
   };
 }
