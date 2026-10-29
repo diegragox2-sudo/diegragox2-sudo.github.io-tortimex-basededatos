@@ -74,7 +74,7 @@ input:focus,select:focus{outline:3px solid var(--green)}
 .toast.on{opacity:1;transform:translateX(-50%)}
 .toast.err{background:var(--red);color:#fff}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.edit{display:grid;grid-template-columns:1fr 76px 76px;gap:6px;padding:9px 0;border-bottom:1px solid var(--line);align-items:center}
+.edit{display:grid;grid-template-columns:1fr 70px 70px 36px;gap:6px;padding:9px 0;border-bottom:1px solid var(--line);align-items:center}
 .edit input{padding:8px 4px;font-size:.88rem;text-align:center}
 .edit .n{font-weight:800;font-size:.85rem}
 .cab{font-size:.64rem;color:var(--mut);letter-spacing:.06em;text-transform:uppercase;font-weight:800}
@@ -98,6 +98,16 @@ input:focus,select:focus{outline:3px solid var(--green)}
 .vuelto.mal{background:var(--red);color:#fff}.vuelto.mal small{color:#fff}
 .dif{text-align:center;font-family:'Lilita One';font-size:1.35rem;padding:10px;border-radius:12px;border:3px solid #fff;margin-top:10px}
 .dif.cero{background:#000;color:#fff}.dif.ok{background:var(--green);color:#000}.dif.mal{background:var(--red);color:#fff}
+.alerta{background:var(--red);color:#fff;border:3px solid #fff;border-radius:14px;padding:12px 14px;margin:8px 0 16px;box-shadow:5px 5px 0 #fff}
+.alerta b{display:block;font-family:'Lilita One';font-weight:400;font-size:1.3rem;letter-spacing:.04em;margin-bottom:2px}
+.alerta span{font-weight:700;line-height:1.35;display:block}
+.alerta.ok{background:var(--green);color:#000;box-shadow:5px 5px 0 var(--red)}
+.stock.ok{background:var(--green);border-color:var(--green);color:#000}
+.scat{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:800;padding:12px 0 2px;border-bottom:2px solid var(--line)}
+.scat:first-child{padding-top:0}
+.sgrid .fila{padding:8px 0}
+.edit .x{background:none;border:2px solid var(--red);color:var(--red);border-radius:8px;height:34px;font:800 1rem Figtree;cursor:pointer}
+.edit input.nm{text-align:left;padding:8px;font-weight:700}
 #canal{display:grid;grid-template-columns:1fr 1fr;gap:8px}#canal button{padding:14px 4px;font-size:.8rem}
 #prev{width:100%;border:3px solid #fff;border-radius:10px;background:#fff;margin-top:12px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center;z-index:40}
@@ -275,7 +285,7 @@ const ic={
  his:'<path d="M13 3a9 9 0 00-9 9H1l4 4 4-4H6a7 7 0 117 7 7 7 0 01-5-2l-1.4 1.4A9 9 0 1013 3zm-1 5v5l4.3 2.5.8-1.3-3.6-2.1V8z"/>',
  pro:'<path d="M12 2L3 7v10l9 5 9-5V7zm0 2.2l6.5 3.6L12 11.4 5.5 7.8zM5 9.5l6 3.3v6.9l-6-3.3zm14 0v6.9l-6 3.3v-6.9z"/>'
 };
-const TABS=[['res','Resumen'],['ven','Vender'],['mov','Entradas'],['cie','Cierre'],['his','Historial'],['pro','Productos']];
+const TABS=[['res','Inicio'],['ven','Vender'],['mov','Entradas'],['cie','Cierre'],['his','Historial'],['pro','Productos']];
 let tab='res';
 document.getElementById('nav').innerHTML=TABS.map(t=>`<button data-t="${t[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic[t[0]]}</svg>${t[1]}</button>`).join('');
 document.getElementById('nav').onclick=e=>{const b=e.target.closest('button');if(b){tab=b.dataset.t;render();scrollTo(0,0)}};
@@ -286,16 +296,27 @@ function render(){
   ({res:bResumen,ven:bVender,mov:bMov,cie:bCierre,his:bHist,pro:bProd})[tab]();
 }
 
-/* ---------- Resumen ---------- */
-let fechaRes=dia();
+/* ---------- Inicio (resumen del día + stock) ---------- */
+let fechaRes=dia(),verStock=false;
+const N_STOCK=5,N_FALTA=4;
 function vResumen(){
   const c=cierre(fechaRes);
   const ms=S.mov.filter(m=>dia(new Date(m.ts))===fechaRes);
   const vend=c.tot1+c.tpy+c.ttr+c.ttj+c.tcr;
   const uni=ms.filter(m=>m.tipo==='venta').reduce((a,m)=>a+m.cant,0);
   const ent=ms.filter(m=>m.tipo==='entrada').reduce((a,m)=>a+m.cant,0);
-  const agot=S.productos.filter(p=>estado(p)).sort((a,b)=>stockDe(a.id)-stockDe(b.id));
-  return `<h2>Resumen del día</h2>
+  const ps=S.productos.filter(p=>!esCliente(p));
+  const orden=[...CATS.filter(x=>x!=='Clientes'),...[...new Set(ps.map(p=>p.cat))].filter(x=>!CATS.includes(x))];
+  const lista=[];orden.forEach(cat=>ps.filter(p=>p.cat===cat).forEach(p=>lista.push(p)));
+  const falta=lista.filter(p=>stockDe(p.id)<=0);
+  const visFalta=verStock?falta:falta.slice(0,N_FALTA),visStock=verStock?lista:lista.slice(0,N_STOCK);
+  let cat='';
+  const filas=visStock.map(p=>{const n=stockDe(p.id);
+    const cab=p.cat!==cat?`<div class="scat">${esc(p.cat)}</div>`:'';cat=p.cat;
+    return cab+`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b></div><span class="stock ${n>0?'ok':'cero'}">${n>0?n+' en stock':'Agotado'+(n<0?' ('+n+')':'')}</span></div>`}).join('');
+  const hayMas=lista.length>N_STOCK||falta.length>N_FALTA;
+  return `<h2>Inicio</h2>
+  <h3 style="margin-top:4px">Ventas del día</h3>
   <input type="date" id="fres" value="${fechaRes}" max="${dia()}" aria-label="Fecha">
   <div class="kpis" style="margin-top:14px">
    <div class="kpi"><span>Vendido</span><b>${Q(vend)}</b></div>
@@ -310,10 +331,15 @@ function vResumen(){
    <div class="resu"><span>Venta con tarjeta de crédito</span><span>${Q2(c.ttj)}</span></div>
    <div class="resu"><span>Tortilla al crédito</span><span>${Q2(c.tcr)}</span></div>
   </div>
-  <h3>Productos agotados</h3>
-  <div class="panel r">${agot.map(p=>`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b></div><span class="stock cero">${stockDe(p.id)} en stock</span></div>`).join('')||'<div class="vacio">Ninguno agotado ✔</div>'}</div>`;
+  <h3>Stock</h3>
+  ${falta.length?`<div class="alerta" role="alert"><b>HACE FALTA</b><span>${visFalta.map(p=>esc(p.nombre)).join(' · ')}${!verStock&&falta.length>N_FALTA?` · y ${falta.length-N_FALTA} más`:''}</span></div>`:'<div class="alerta ok"><b>Todo en stock ✔</b></div>'}
+  <div class="panel sgrid">${filas||'<div class="vacio">Sin productos</div>'}</div>
+  ${hayMas?`<button class="btn g" id="mas" style="border:3px solid #fff">${verStock?'Mostrar menos':'Mostrar más ('+(lista.length-N_STOCK)+' productos)'}</button>`:''}`;
 }
-function bResumen(){document.getElementById('fres').onchange=e=>{fechaRes=e.target.value||dia();render()}}
+function bResumen(){
+  document.getElementById('fres').onchange=e=>{fechaRes=e.target.value||dia();render()};
+  const m=document.getElementById('mas');if(m)m.onclick=()=>{verStock=!verStock;keep(()=>render())};
+}
 
 /* ---------- Vender ---------- */
 let carro={},catV='Todos',canalV='tienda',notaV='';
@@ -329,7 +355,7 @@ function vVender(){
   <input id="vn" maxlength="60" placeholder="${ph}" value="${esc(notaV)}" style="margin:10px 0" aria-label="Nota">
   <div class="chips">${cats().map(c=>`<button data-c="${esc(c)}" class="${c===catV?'on':''}">${esc(c)}</button>`).join('')}</div>
   ${catV==='Clientes'?'<p class="nota" style="margin:-4px 0 10px">Estas ventas se anotan en <b>Tortilla al crédito</b> en el cierre del día.</p>':''}
-  <div class="panel">${lista.map(p=>`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b><small>${Q(precioDe(p,canalV))}${esCliente(p)?'':` · <span class="stock ${estado(p)}" style="padding:0 7px;font-size:.72rem">${stockDe(p.id)}</span>`}</small></div>
+  <div class="panel">${lista.map(p=>`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b><small>${Q(precioDe(p,canalV))}${esCliente(p)?'':` · <span class="stock ${stockDe(p.id)>0?'ok':'cero'}" style="padding:0 7px;font-size:.72rem">${stockDe(p.id)}</span>`}</small></div>
    <div class="cant"><button data-m="${p.id}" aria-label="Quitar">−</button><output>${carro[p.id]||0}</output><button class="mas" data-p="${p.id}" aria-label="Agregar">+</button></div></div>`).join('')}</div>
   <div class="total"><div><span>${n} producto${n===1?'':'s'} · ${CANALES[canalV]}</span><b>${Q(tot)}</b></div><button class="btn r" id="cobrar" ${n?'':'disabled'}>Registrar</button></div>`;
 }
@@ -629,9 +655,9 @@ function bHist(){
 /* ---------- Productos ---------- */
 function vProd(){
   return `<h2>Productos</h2>
-  <div class="panel"><div class="edit"><span class="cab">Producto</span><span class="cab">Tienda Q</span><span class="cab">P. Ya Q</span></div>
-  ${S.productos.map(p=>`<div class="edit"><span class="n">${esc(p.nombre)}</span><input type="number" step="0.25" min="0" value="${p.precio}" data-pr="${p.id}" aria-label="Precio">${esCliente(p)?'<span></span>':`<input type="number" step="0.5" min="0" value="${p.pp==null?'':p.pp}" placeholder="—" data-pp="${p.id}" aria-label="Precio Pedidos Ya">`}</div>`).join('')}
-  <p class="nota">“P. Ya” es el precio en Pedidos Ya; si lo dejas vacío se usa el de tienda.</p></div>
+  <div class="panel"><div class="edit"><span class="cab">Producto</span><span class="cab">Tienda Q</span><span class="cab">P. Ya Q</span><span></span></div>
+  ${S.productos.map(p=>`<div class="edit"><input class="nm" value="${esc(p.nombre)}" maxlength="50" data-nm="${p.id}" aria-label="Nombre"><input type="number" step="0.25" min="0" value="${p.precio}" data-pr="${p.id}" aria-label="Precio">${esCliente(p)?'<span></span>':`<input type="number" step="0.5" min="0" value="${p.pp==null?'':p.pp}" placeholder="—" data-pp="${p.id}" aria-label="Precio Pedidos Ya">`}<button class="x" data-del="${p.id}" aria-label="Borrar producto">✕</button></div>`).join('')}
+  <p class="nota">Toca un nombre o un precio para cambiarlo; se guarda solo y le llega a todos. “P. Ya” es el precio en Pedidos Ya; si lo dejas vacío se usa el de tienda. Solo se puede borrar un producto que no tenga movimientos.</p></div>
   <h3>Agregar producto</h3>
   <div class="panel r"><label for="np">Nombre</label><input id="np" maxlength="50">
    <div class="grid2"><div><label for="nc">Categoría</label><input id="nc" list="cl" value="Frituras"><datalist id="cl">${CATS.map(c=>`<option>${esc(c)}`).join('')}</datalist></div><div><label for="npr">Precio tienda Q</label><input id="npr" type="number" step="0.5" min="0"></div></div>
@@ -640,8 +666,15 @@ function vProd(){
 }
 function bProd(){
   const setP=()=>op({op:'setProductos',productos:S.productos});
+  document.querySelectorAll('[data-nm]').forEach(i=>i.onchange=()=>{const p=prod(i.dataset.nm),n=i.value.trim();if(!n){i.value=p.nombre;return aviso('El nombre no puede quedar vacío',1)}p.nombre=n;setP();aviso('Nombre actualizado')});
   document.querySelectorAll('[data-pr]').forEach(i=>i.onchange=()=>{prod(i.dataset.pr).precio=Math.max(0,parseFloat(i.value)||0);setP();aviso('Precio actualizado')});
   document.querySelectorAll('[data-pp]').forEach(i=>i.onchange=()=>{prod(i.dataset.pp).pp=i.value===''?null:Math.max(0,parseFloat(i.value)||0);setP();aviso('Precio Pedidos Ya actualizado')});
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
+    const p=prod(b.dataset.del);
+    if(S.mov.some(m=>m.pid===p.id))return aviso('No se puede borrar: ya tiene movimientos',1);
+    if(!confirm('¿Borrar "'+p.nombre+'"?'))return;
+    S.productos=S.productos.filter(x=>x.id!==p.id);setP();render();aviso('Producto borrado');
+  });
   document.getElementById('addp').onclick=()=>{
     const n=document.getElementById('np').value.trim(),pr=parseFloat(document.getElementById('npr').value),pp=document.getElementById('npp').value;
     if(!n||isNaN(pr))return aviso('Falta nombre o precio',1);
