@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>TortiMex · Inventario</title>
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;700;800&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--card:#111814;--green:#10b981;--red:#e63946;--txt:#fff;--mut:#9aa8a0;--line:#26332b}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--txt);font-family:Figtree,system-ui,sans-serif;font-weight:500;min-height:100vh;padding-bottom:90px}
+.franja{height:8px;background:linear-gradient(90deg,var(--green) 0 33.3%,#fff 33.3% 66.6%,var(--red) 66.6%)}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 6px;max-width:760px;margin:0 auto}
+.marca{font-family:'Lilita One',cursive;font-size:1.9rem;letter-spacing:.02em;color:#fff;-webkit-text-stroke:2px #000;paint-order:stroke fill;text-shadow:3px 3px 0 var(--red)}
+.marca small{display:block;font-family:Figtree;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--green);text-shadow:none;-webkit-text-stroke:0;font-weight:800}
+.fecha{font-size:.8rem;color:var(--mut);text-align:right}
+main{max-width:760px;margin:0 auto;padding:10px 16px}
+nav{position:fixed;left:0;right:0;bottom:0;background:#000;border-top:3px solid #fff;display:flex;justify-content:center;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
+nav .in{display:flex;width:100%;max-width:760px}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 2px 9px;font:800 .68rem Figtree;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button svg{width:22px;height:22px;fill:currentColor}
+nav button.on{color:var(--green)}
+h2{font-family:'Lilita One';font-weight:400;font-size:1.5rem;letter-spacing:.02em;margin:10px 0 10px}
+h3{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin:18px 0 8px}
+.panel{background:var(--card);border:3px solid #fff;border-radius:14px;box-shadow:5px 5px 0 var(--green);padding:14px;margin-bottom:16px}
+.panel.r{box-shadow:5px 5px 0 var(--red)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}
+.kpi{background:var(--card);border:3px solid #fff;border-radius:14px;box-shadow:4px 4px 0 var(--green);padding:12px}
+.kpi.r{box-shadow:4px 4px 0 var(--red)}
+.kpi b{display:block;font-family:'Lilita One';font-weight:400;font-size:1.8rem;line-height:1.1}
+.kpi span{font-size:.72rem;color:var(--mut);letter-spacing:.08em;text-transform:uppercase;font-weight:800}
+.fila{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.fila:last-child{border-bottom:0}
+.fila .n{flex:1;min-width:0}
+.fila .n b{display:block;font-weight:800;font-size:.95rem}
+.fila .n small{color:var(--mut);font-size:.78rem}
+.stock{font-weight:800;font-size:.85rem;padding:3px 9px;border-radius:99px;border:2px solid var(--green);color:var(--green);white-space:nowrap}
+.stock.bajo{border-color:var(--red);color:var(--red)}
+.stock.cero{background:var(--red);border-color:var(--red);color:#fff}
+.cant{display:flex;align-items:center;gap:6px}
+.cant button{width:38px;height:38px;border-radius:10px;border:2px solid #fff;background:#000;color:#fff;font:800 1.3rem Figtree;cursor:pointer;line-height:1}
+.cant button.mas{background:var(--green);border-color:var(--green);color:#000}
+.cant output{min-width:26px;text-align:center;font-weight:800;font-size:1.05rem}
+.btn{display:block;width:100%;background:var(--green);color:#000;border:3px solid #fff;border-radius:12px;box-shadow:4px 4px 0 #fff;padding:13px;font:800 1rem Figtree;letter-spacing:.04em;cursor:pointer;text-transform:uppercase}
+.btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #fff}
+.btn.r{background:var(--red);color:#fff}
+.btn.g{background:#000;color:#fff;box-shadow:none;font-size:.85rem;padding:10px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+label{display:block;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);font-weight:800;margin:10px 0 5px}
+input,select{width:100%;background:#000;color:#fff;border:2px solid #fff;border-radius:10px;padding:11px;font:600 1rem Figtree}
+input:focus,select:focus{outline:3px solid var(--green)}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;padding:11px 4px;border-radius:10px;border:2px solid #fff;background:#000;color:#fff;font:800 .85rem Figtree;cursor:pointer;text-transform:uppercase}
+.seg button.on{background:var(--green);border-color:var(--green);color:#000}
+.seg button.on.s{background:var(--red);border-color:var(--red);color:#fff}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.chips button{flex:none;padding:7px 13px;border-radius:99px;border:2px solid #fff;background:#000;color:#fff;font:800 .8rem Figtree;cursor:pointer}
+.chips button.on{background:var(--green);border-color:var(--green);color:#000}
+.tag{font-size:.7rem;font-weight:800;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.06em}
+.tag.venta{background:var(--green);color:#000}.tag.entrada{background:#fff;color:#000}.tag.salida{background:var(--red);color:#fff}
+.del{background:none;border:0;color:var(--mut);font-size:1.2rem;cursor:pointer;padding:4px 8px}
+.total{position:sticky;bottom:78px;background:#000;border:3px solid #fff;border-radius:14px;box-shadow:5px 5px 0 var(--red);padding:12px;margin-top:14px;display:flex;align-items:center;gap:12px}
+.total div{flex:1}.total b{font-family:'Lilita One';font-weight:400;font-size:1.6rem;display:block;line-height:1}
+.total span{font-size:.72rem;color:var(--mut);font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.total .btn{width:auto;padding:12px 18px}
+.vacio{color:var(--mut);text-align:center;padding:18px 6px;font-size:.9rem}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--green);color:#000;border:3px solid #fff;border-radius:12px;padding:10px 18px;font-weight:800;opacity:0;pointer-events:none;transition:.25s;z-index:30;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.toast.err{background:var(--red);color:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.edit{display:grid;grid-template-columns:1fr 78px 64px;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);align-items:center}
+.edit input{padding:8px;font-size:.9rem}
+.edit .n{font-weight:800;font-size:.88rem}
+.cab{font-size:.68rem;color:var(--mut);letter-spacing:.08em;text-transform:uppercase;font-weight:800}
+.nota{font-size:.78rem;color:var(--mut);margin-top:8px;line-height:1.4}
+.hide{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="franja"></div>
+<header>
+  <div class="marca">TortiMex<small>Inventario</small></div>
+  <div class="fecha"><div id="hoy"></div><div id="est" style="margin-top:3px;font-weight:700"></div></div>
+</header>
+<main id="vista"></main>
+
+<nav><div class="in" id="nav"></div></nav>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ---------- Datos ---------- */
+/* Pega aquí los datos de Supabase (ver instrucciones). Vacío = modo local en este aparato. */
+const SUPA_URL='';   // ej. https://abcdxyz.supabase.co
+const SUPA_KEY='';   // la clave "anon public" (o "publishable")
+const API_URL=SUPA_URL&&SUPA_KEY?SUPA_URL:'';
+const rpc=async(fn,body)=>{
+  const r=await fetch(SUPA_URL.replace(/\/$/,'')+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw 'http '+r.status;
+  return r.json();
+};
+const KEY='tortimex-inventario-v2',KQ='tortimex-cola-v2',KP='tortimex-pin';
+const SEED=[
+ ['Tortilla Grande No.14 · 1/2 lb','Tortilla',5],['Tortilla Grande No.14 · 1 lb','Tortilla',10],
+ ['Tostada Pequeña No.10 (25 u)','Frituras',10.5],['Tostada Mediana No.12 (25 u)','Frituras',17.5],['Tostada Grande No.14 (25 u)','Frituras',19],['Tostada Jumbo No.16 (25 u)','Frituras',22.5],
+ ['Taco Pequeño Simple','Frituras',12.5],['Taco Grande Simple (25 u)','Frituras',22.5],['Nacho Simple · 1 lb','Frituras',22.5],['Pizzerolas · 1 lb','Frituras',22.5],
+ ['Canastas (12 u)','Frituras',15],['Chalupas (10 u)','Frituras',15],
+ ['Queso Seco · 113 g','Lácteos',15],['Queso Pita · 1/2 lb','Lácteos',25.5],
+ ['Bebida Maní Max (cremita)','Bebidas',15],['Bebida Maní Max (manía)','Bebidas',15],['Coca-Cola lata 354 ml','Bebidas',8],['Coca-Cola Pet 2 L','Bebidas',25.5]
+];
+let S=cargar(),COLA=cargarCola(),estadoRed=API_URL?'off':'local';
+function cargar(){
+  try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.productos)return d}catch(e){}
+  return {productos:SEED.map((p,i)=>({id:'p'+(i+1),nombre:p[0],cat:p[1],precio:p[2],min:5})),mov:[]};
+}
+function cargarCola(){try{return JSON.parse(localStorage.getItem(KQ))||[]}catch(e){return []}}
+function guardar(){try{localStorage.setItem(KEY,JSON.stringify(S));localStorage.setItem(KQ,JSON.stringify(COLA))}catch(e){aviso('No se pudo guardar en este navegador',1)}}
+const nid=()=>'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const copia=x=>JSON.parse(JSON.stringify(x));
+
+/* ---------- Sincronización con Google Sheets ---------- */
+function aplicar(st,o){
+  if(o.op==='addMov'){if(!st.mov.some(m=>m.id===o.mov.id))st.mov.push(o.mov)}
+  else if(o.op==='delMov'){st.mov=st.mov.filter(m=>m.id!==o.id)}
+  else if(o.op==='setProductos'){st.productos=copia(o.productos)}
+}
+function op(o){aplicar(S,o);COLA.push(copia(o));guardar();sync()}
+let sincronizando=false;
+async function sync(){
+  if(!API_URL||sincronizando)return;
+  sincronizando=true;
+  try{
+    let pin=localStorage.getItem(KP);
+    if(!pin){pin=(prompt('Código de acceso del inventario:')||'').trim();if(!pin)throw 'pin';localStorage.setItem(KP,pin)}
+    if(COLA.length){
+      const n=COLA.length;
+      const r=await rpc('inv_ops',{p_pin:pin,p_ops:COLA.slice(0,n)});
+      if(r.error){if(r.error==='pin')localStorage.removeItem(KP);throw r.error}
+      COLA.splice(0,n);guardar();
+    }
+    const d=await rpc('inv_all',{p_pin:pin});
+    if(d.error){if(d.error==='pin')localStorage.removeItem(KP);throw d.error}
+    if(!d.productos.length){
+      await rpc('inv_ops',{p_pin:pin,p_ops:[{op:'setProductos',productos:S.productos}]});
+    }else{
+      const antes=JSON.stringify(S),nuevo={productos:d.productos,mov:d.mov};
+      COLA.forEach(o=>aplicar(nuevo,o));
+      S=nuevo;guardar();
+      if(antes!==JSON.stringify(S))refrescar();
+    }
+    estadoRed='ok';
+  }catch(e){estadoRed='off'}
+  finally{sincronizando=false;pintarEstado()}
+}
+function refrescar(){const a=document.activeElement;if(a&&/INPUT|SELECT/.test(a.tagName))return;keep(()=>render())}
+function pintarEstado(){
+  const e=document.getElementById('est');if(!e)return;
+  const n=COLA.length;
+  e.innerHTML=estadoRed==='ok'&&!n?'<i style="color:var(--green)">●</i> Sincronizado':estadoRed==='local'?'<i style="color:var(--mut)">●</i> Solo en este aparato':'<i style="color:var(--red)">●</i> Sin conexión'+(n?` · ${n} pendiente${n>1?'s':''}`:'');
+}
+const Q=n=>'Q'+(+n).toLocaleString('es-GT',{minimumFractionDigits:(n%1?2:0),maximumFractionDigits:2});
+const pad=n=>String(n).padStart(2,'0');
+const dia=d=>{d=d||new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const hora=ts=>{const d=new Date(ts);return pad(d.getHours())+':'+pad(d.getMinutes())};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const prod=id=>S.productos.find(p=>p.id===id);
+function stockDe(id){return S.mov.reduce((a,m)=>m.pid!==id?a:a+(m.tipo==='entrada'?m.cant:-m.cant),0)}
+function aviso(t,err){const e=document.getElementById('toast');e.textContent=t;e.className='toast on'+(err?' err':'');clearTimeout(aviso.t);aviso.t=setTimeout(()=>e.className='toast',2200)}
+function estado(p){const s=stockDe(p.id);return s<=0?'cero':s<=p.min?'bajo':''}
+
+/* ---------- Navegación ---------- */
+const ic={
+ res:'<path d="M4 13h4v7H4zm6-9h4v16h-4zm6 5h4v11h-4z"/>',
+ ven:'<path d="M7 18a2 2 0 100 4 2 2 0 000-4zm10 0a2 2 0 100 4 2 2 0 000-4zM1 2v2h2l3.6 7.6-1.4 2.4A2 2 0 007 17h12v-2H7.4l1.1-2h7.5a2 2 0 001.7-1l3.6-6.5A1 1 0 0020.4 4H5.2l-.9-2z"/>',
+ mov:'<path d="M7 3L3 7l4 4V8h7V6H7zm10 10v3H10v2h7v3l4-4z"/>',
+ his:'<path d="M13 3a9 9 0 00-9 9H1l4 4 4-4H6a7 7 0 117 7 7 7 0 01-5-2l-1.4 1.4A9 9 0 1013 3zm-1 5v5l4.3 2.5.8-1.3-3.6-2.1V8z"/>',
+ pro:'<path d="M12 2L3 7v10l9 5 9-5V7zm0 2.2l6.5 3.6L12 11.4 5.5 7.8zM5 9.5l6 3.3v6.9l-6-3.3zm14 0v6.9l-6 3.3v-6.9z"/>'
+};
+const TABS=[['res','Resumen'],['ven','Vender'],['mov','Entradas'],['his','Historial'],['pro','Productos']];
+let tab='res';
+document.getElementById('nav').innerHTML=TABS.map(t=>`<button data-t="${t[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic[t[0]]}</svg>${t[1]}</button>`).join('');
+document.getElementById('nav').onclick=e=>{const b=e.target.closest('button');if(b){tab=b.dataset.t;render();scrollTo(0,0)}};
+document.getElementById('hoy').innerHTML=new Date().toLocaleDateString('es-GT',{weekday:'long',day:'numeric',month:'long'});
+
+function render(){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+  const v=document.getElementById('vista');
+  v.innerHTML=({res:vResumen,ven:vVender,mov:vMov,his:vHist,pro:vProd})[tab]();
+  ({res:bResumen,ven:bVender,mov:bMov,his:bHist,pro:bProd})[tab]();
+}
+
+/* ---------- Resumen ---------- */
+let fechaRes=dia();
+function vResumen(){
+  const ms=S.mov.filter(m=>dia(new Date(m.ts))===fechaRes&&m.tipo==='venta');
+  const total=ms.reduce((a,m)=>a+m.cant*m.precio,0),uni=ms.reduce((a,m)=>a+m.cant,0);
+  const por={};ms.forEach(m=>{(por[m.pid]=por[m.pid]||{c:0,t:0});por[m.pid].c+=m.cant;por[m.pid].t+=m.cant*m.precio});
+  const filas=Object.entries(por).sort((a,b)=>b[1].t-a[1].t).map(([id,x])=>`<div class="fila"><div class="n"><b>${esc(prod(id)?.nombre||'(borrado)')}</b></div><div><b>${x.c}</b> u</div><div style="min-width:70px;text-align:right"><b>${Q(x.t)}</b></div></div>`).join('');
+  const bajos=S.productos.filter(p=>estado(p)).sort((a,b)=>stockDe(a.id)-stockDe(b.id));
+  const ent=S.mov.filter(m=>dia(new Date(m.ts))===fechaRes&&m.tipo==='entrada').reduce((a,m)=>a+m.cant,0);
+  const sal=S.mov.filter(m=>dia(new Date(m.ts))===fechaRes&&m.tipo==='salida').reduce((a,m)=>a+m.cant,0);
+  return `<h2>Cierre del día</h2>
+  <input type="date" id="fres" value="${fechaRes}" max="${dia()}" aria-label="Fecha">
+  <div class="kpis" style="margin-top:14px">
+   <div class="kpi"><span>Vendido</span><b>${Q(total)}</b></div>
+   <div class="kpi"><span>Unidades</span><b>${uni}</b></div>
+   <div class="kpi r"><span>Entradas</span><b>${ent}</b></div>
+   <div class="kpi r"><span>Salidas / merma</span><b>${sal}</b></div>
+  </div>
+  <h3>Ventas por producto</h3>
+  <div class="panel">${filas||'<div class="vacio">Sin ventas este día</div>'}</div>
+  <h3>Stock bajo o agotado</h3>
+  <div class="panel r">${bajos.map(p=>`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b><small>Mínimo: ${p.min}</small></div><span class="stock ${estado(p)}">${stockDe(p.id)} en stock</span></div>`).join('')||'<div class="vacio">Todo en orden ✔</div>'}</div>`;
+}
+function bResumen(){document.getElementById('fres').onchange=e=>{fechaRes=e.target.value||dia();render()}}
+
+/* ---------- Vender ---------- */
+let carro={},catV='Todos';
+const cats=()=>['Todos',...new Set(S.productos.map(p=>p.cat))];
+function vVender(){
+  const lista=S.productos.filter(p=>catV==='Todos'||p.cat===catV);
+  const tot=Object.entries(carro).reduce((a,[id,c])=>a+c*prod(id).precio,0),n=Object.values(carro).reduce((a,c)=>a+c,0);
+  return `<h2>Registrar venta</h2>
+  <div class="chips">${cats().map(c=>`<button data-c="${esc(c)}" class="${c===catV?'on':''}">${esc(c)}</button>`).join('')}</div>
+  <div class="panel">${lista.map(p=>`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b><small>${Q(p.precio)} · <span class="stock ${estado(p)}" style="padding:0 7px;font-size:.72rem">${stockDe(p.id)}</span></small></div>
+   <div class="cant"><button data-m="${p.id}" aria-label="Quitar">−</button><output>${carro[p.id]||0}</output><button class="mas" data-p="${p.id}" aria-label="Agregar">+</button></div></div>`).join('')}</div>
+  <div class="total"><div><span>${n} producto${n===1?'':'s'}</span><b>${Q(tot)}</b></div><button class="btn r" id="cobrar" ${n?'':'disabled'}>Registrar</button></div>`;
+}
+function bVender(){
+  const v=document.getElementById('vista');
+  v.querySelector('.chips').onclick=e=>{const b=e.target.closest('button');if(b){catV=b.dataset.c;render()}};
+  v.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{carro[b.dataset.p]=(carro[b.dataset.p]||0)+1;keep(()=>render())});
+  v.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const id=b.dataset.m;if(carro[id]){carro[id]--;if(!carro[id])delete carro[id]}keep(()=>render())});
+  document.getElementById('cobrar').onclick=()=>{
+    const faltan=Object.entries(carro).filter(([id,c])=>c>stockDe(id)).map(([id])=>prod(id).nombre);
+    if(faltan.length&&!confirm('No hay stock suficiente de:\n• '+faltan.join('\n• ')+'\n\n¿Registrar la venta de todos modos?'))return;
+    const ts=Date.now();
+    const t=Object.entries(carro).reduce((a,[id,c])=>a+c*prod(id).precio,0);
+    Object.entries(carro).forEach(([id,c],i)=>op({op:'addMov',mov:{id:nid(),ts:ts+i,pid:id,tipo:'venta',cant:c,precio:prod(id).precio,nota:''}}));
+    carro={};render();aviso('Venta registrada · '+Q(t));
+  };
+}
+function keep(f){const y=scrollY;f();scrollTo(0,y)}
+
+/* ---------- Entradas / salidas ---------- */
+let tipoM='entrada';
+function vMov(){
+  return `<h2>Entradas y salidas</h2>
+  <div class="panel">
+   <div class="seg" id="tipo"><button data-t="entrada" class="${tipoM==='entrada'?'on':''}">Entrada</button><button data-t="salida" class="s ${tipoM==='salida'?'on s':''}">Salida / merma</button></div>
+   <label for="mp">Producto</label>
+   <select id="mp">${S.productos.map(p=>`<option value="${p.id}">${esc(p.nombre)} — stock ${stockDe(p.id)}</option>`).join('')}</select>
+   <label for="mc">Cantidad</label>
+   <input id="mc" type="number" inputmode="numeric" min="1" step="1" placeholder="0">
+   <label for="mn">Nota (opcional)</label>
+   <input id="mn" type="text" maxlength="60" placeholder="${tipoM==='entrada'?'Ej. producción de la mañana':'Ej. se quemó, regalo, muestra'}">
+   <div style="margin-top:16px"><button class="btn ${tipoM==='salida'?'r':''}" id="gm">Guardar ${tipoM==='entrada'?'entrada':'salida'}</button></div>
+   <p class="nota">Entrada: producto que ingresa (producción o compra). Salida: producto que sale sin ser venta (merma, regalo, devolución).</p>
+  </div>`;
+}
+function bMov(){
+  document.getElementById('tipo').onclick=e=>{const b=e.target.closest('button');if(b){tipoM=b.dataset.t;render()}};
+  document.getElementById('gm').onclick=()=>{
+    const c=parseInt(document.getElementById('mc').value,10);
+    if(!(c>0))return aviso('Escribe una cantidad válida',1);
+    op({op:'addMov',mov:{id:nid(),ts:Date.now(),pid:document.getElementById('mp').value,tipo:tipoM,cant:c,precio:0,nota:document.getElementById('mn').value.trim()}});
+    render();aviso(tipoM==='entrada'?'Entrada guardada':'Salida guardada');
+  };
+}
+
+/* ---------- Historial ---------- */
+let fechaH=dia();
+function vHist(){
+  const ms=S.mov.filter(m=>dia(new Date(m.ts))===fechaH).sort((a,b)=>b.ts-a.ts);
+  return `<h2>Historial</h2>
+  <input type="date" id="fh" value="${fechaH}" max="${dia()}" aria-label="Fecha">
+  <div class="panel" style="margin-top:14px">${ms.map(m=>{const p=prod(m.pid);return `<div class="fila"><div class="n"><b>${esc(p?p.nombre:'(borrado)')}</b><small>${hora(m.ts)}${m.nota?' · '+esc(m.nota):''}</small></div><span class="tag ${m.tipo}">${m.tipo}</span><div style="min-width:54px;text-align:right"><b>${m.tipo==='entrada'?'+':'−'}${m.cant}</b>${m.tipo==='venta'?`<br><small style="color:var(--mut)">${Q(m.cant*m.precio)}</small>`:''}</div><button class="del" data-d="${m.id}" aria-label="Eliminar registro">✕</button></div>`}).join('')||'<div class="vacio">Sin movimientos este día</div>'}</div>
+  <h3>Respaldo de datos</h3>
+  <div class="panel r"><div class="grid2"><button class="btn g" id="csv">Exportar a Excel (CSV)</button><button class="btn g" id="bak">Descargar respaldo</button></div>
+  <label for="rest" style="margin-top:14px">Restaurar respaldo</label><input type="file" id="rest" accept=".json">
+  <p class="nota">Los datos se guardan en este dispositivo. Descarga un respaldo seguido para no perderlos.</p></div>`;
+}
+function bHist(){
+  document.getElementById('fh').onchange=e=>{fechaH=e.target.value||dia();render()};
+  document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{if(confirm('¿Eliminar este registro? El stock se ajustará.')){op({op:'delMov',id:b.dataset.d});render();aviso('Registro eliminado')}});
+  const bajar=(n,t,tipo)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:tipo}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+  document.getElementById('csv').onclick=()=>{
+    const f=['Fecha','Hora','Tipo','Producto','Cantidad','Precio','Total','Nota'];
+    const r=S.mov.slice().sort((a,b)=>a.ts-b.ts).map(m=>[dia(new Date(m.ts)),hora(m.ts),m.tipo,prod(m.pid)?.nombre||'',m.cant,m.precio,m.tipo==='venta'?m.cant*m.precio:'',m.nota].map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(','));
+    bajar('tortimex-movimientos-'+dia()+'.csv','﻿'+[f.join(','),...r].join('\r\n'),'text/csv');
+  };
+  document.getElementById('bak').onclick=()=>bajar('tortimex-respaldo-'+dia()+'.json',JSON.stringify(S),'application/json');
+  document.getElementById('rest').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.productos||!d.mov)throw 0;if(confirm('Esto agrega al sistema los productos y movimientos del respaldo. ¿Continuar?')){op({op:'setProductos',productos:d.productos});d.mov.forEach(m=>op({op:'addMov',mov:m}));render();aviso('Respaldo restaurado')}}catch(x){aviso('Archivo no válido',1)}};
+    r.readAsText(f);
+  };
+}
+
+/* ---------- Productos ---------- */
+function vProd(){
+  return `<h2>Productos</h2>
+  <div class="panel"><div class="edit"><span class="cab">Producto</span><span class="cab">Precio Q</span><span class="cab">Mín.</span></div>
+  ${S.productos.map(p=>`<div class="edit"><span class="n">${esc(p.nombre)}</span><input type="number" step="0.5" min="0" value="${p.precio}" data-pr="${p.id}" aria-label="Precio"><input type="number" min="0" value="${p.min}" data-mi="${p.id}" aria-label="Stock mínimo"></div>`).join('')}
+  <p class="nota">“Mín.” es la cantidad a partir de la cual el producto sale en alerta de stock bajo.</p></div>
+  <h3>Agregar producto</h3>
+  <div class="panel r"><label for="np">Nombre</label><input id="np" maxlength="50">
+   <div class="grid2"><div><label for="nc">Categoría</label><input id="nc" list="cl" value="Frituras"><datalist id="cl">${[...new Set(S.productos.map(p=>p.cat))].map(c=>`<option>${esc(c)}`).join('')}</datalist></div><div><label for="npr">Precio Q</label><input id="npr" type="number" step="0.5" min="0"></div></div>
+   <div style="margin-top:16px"><button class="btn" id="addp">Agregar</button></div></div>`;
+}
+function bProd(){
+  const setP=()=>op({op:'setProductos',productos:S.productos});
+  document.querySelectorAll('[data-pr]').forEach(i=>i.onchange=()=>{prod(i.dataset.pr).precio=Math.max(0,parseFloat(i.value)||0);setP();aviso('Precio actualizado')});
+  document.querySelectorAll('[data-mi]').forEach(i=>i.onchange=()=>{prod(i.dataset.mi).min=Math.max(0,parseInt(i.value,10)||0);setP();aviso('Mínimo actualizado')});
+  document.getElementById('addp').onclick=()=>{
+    const n=document.getElementById('np').value.trim(),pr=parseFloat(document.getElementById('npr').value);
+    if(!n||isNaN(pr))return aviso('Falta nombre o precio',1);
+    S.productos.push({id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),nombre:n,cat:document.getElementById('nc').value.trim()||'Otros',precio:pr,min:5});
+    op({op:'setProductos',productos:S.productos});render();aviso('Producto agregado');
+  };
+}
+render();pintarEstado();sync();
+setInterval(sync,15000);
+addEventListener('online',sync);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});
+</script>
+</body>
+</html>
