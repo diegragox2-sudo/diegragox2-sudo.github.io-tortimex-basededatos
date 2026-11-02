@@ -122,6 +122,8 @@ input:focus,select:focus{outline:3px solid var(--green)}
 .dia:first-child{padding-top:0}
 .dia span{color:#fff;text-transform:none;letter-spacing:0}
 .nom{width:100%;padding:8px;font-size:.9rem;margin-bottom:6px;font-weight:700}
+#canal button:last-child{grid-column:1/-1}
+.seg button.on.cl{background:#a78bfa;border-color:#a78bfa;color:#000}
 #canal{display:grid;grid-template-columns:1fr 1fr;gap:8px}#canal button{padding:14px 4px;font-size:.8rem}
 #prev{width:100%;border:3px solid #fff;border-radius:10px;background:#fff;margin-top:12px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center;z-index:40}
@@ -199,6 +201,7 @@ const SEED=[
 ];
 const CANALES={tienda:'Tienda',pedidosya:'Pedidos Ya',transferencia:'Transferencia',tarjeta:'Tarjeta de crédito'};
 const CANAL_LBL=Object.assign({credito:'Tortilla al crédito'},CANALES);
+const CANAL_SEL=Object.assign({},CANALES,{credito:'Clientes'});
 const CTAG={tienda:'',pedidosya:'py',transferencia:'tr',tarjeta:'cr',credito:'cl'};
 
 let S=cargar(),COLA=cargarCola(),estadoRed=API_URL?'off':'local';
@@ -390,27 +393,35 @@ function bResumen(){
 
 /* ---------- Vender ---------- */
 let carro={},catV='Todos',canalV='tienda',notaV='';
-const cats=()=>['Todos',...CATS.filter(c=>S.productos.some(p=>p.cat===c)),...[...new Set(S.productos.map(p=>p.cat))].filter(c=>!CATS.includes(c))];
+const cats=()=>['Todos',...CATS.filter(c=>c!=='Clientes'&&S.productos.some(p=>p.cat===c)),...[...new Set(S.productos.map(p=>p.cat))].filter(c=>!CATS.includes(c))];
 const totalCarro=()=>Object.entries(carro).reduce((a,[id,c])=>a+c*precioDe(prod(id),canalV),0);
 function vVender(){
-  const lista=S.productos.filter(p=>catV==='Todos'?!esCliente(p):p.cat===catV);
+  const cli=canalV==='credito';
+  const lista=cli?S.productos.filter(esCliente):S.productos.filter(p=>!esCliente(p)&&(catV==='Todos'||p.cat===catV));
   const tot=totalCarro(),n=Object.values(carro).reduce((a,c)=>a+c,0);
-  const hayCli=Object.keys(carro).some(id=>esCliente(prod(id)));
-  const ph=hayCli?'Nombre del cliente':canalV==='transferencia'?'Quién transfirió / referencia':canalV==='tarjeta'?'Referencia (opcional)':canalV==='pedidosya'?'N.º de pedido (opcional)':'Nota (opcional)';
+  const ph=cli?'Nombre del cliente':canalV==='transferencia'?'Quién transfirió / referencia':canalV==='tarjeta'?'Referencia (opcional)':canalV==='pedidosya'?'N.º de pedido (opcional)':'Nota (opcional)';
   return `<h2>Registrar venta</h2>
-  <div class="seg" id="canal">${Object.entries(CANALES).map(([k,v])=>`<button data-k="${k}" class="${k===canalV?'on':''} ${k==='pedidosya'?'py':''}">${v}</button>`).join('')}</div>
+  <div class="seg" id="canal">${Object.entries(CANAL_SEL).map(([k,v])=>`<button data-k="${k}" class="${k===canalV?'on':''} ${k==='pedidosya'?'py':k==='credito'?'cl':''}">${v}</button>`).join('')}</div>
   <input id="vn" maxlength="60" placeholder="${ph}" value="${esc(notaV)}" style="margin:10px 0" aria-label="Nota">
-  <div class="chips">${cats().map(c=>`<button data-c="${esc(c)}" class="${c===catV?'on':''}">${esc(c)}</button>`).join('')}</div>
-  ${catV==='Clientes'?'<p class="nota" style="margin:-4px 0 10px">Estas ventas se anotan en <b>Tortilla al crédito</b> en el cierre del día.</p>':''}
+  ${cli?'<p class="nota" style="margin:-2px 0 10px">Estas ventas quedan como <b>tortilla al crédito</b>: se cobran en la pestaña <b>Crédito</b>.</p>':`<div class="chips">${cats().map(c=>`<button data-c="${esc(c)}" class="${c===catV?'on':''}">${esc(c)}</button>`).join('')}</div>`}
   <div class="panel">${lista.map(p=>`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b><small>${Q(precioDe(p,canalV))}${esCliente(p)?'':` · <span class="stock ${stockDe(p.id)>0?'ok':'cero'}" style="padding:0 7px;font-size:.72rem">${stockDe(p.id)}</span>`}</small></div>
    <div class="cant"><button data-m="${p.id}" aria-label="Quitar">−</button><output>${carro[p.id]||0}</output><button class="mas" data-p="${p.id}" aria-label="Agregar">+</button></div></div>`).join('')}</div>
-  <div class="total"><div><span>${n} producto${n===1?'':'s'} · ${CANALES[canalV]}</span><b>${Q(tot)}</b></div><button class="btn r" id="cobrar" ${n?'':'disabled'}>Registrar</button></div>`;
+  ${cli?logClientes():''}
+  <div class="total"><div><span>${n} producto${n===1?'':'s'} · ${CANAL_SEL[canalV]}</span><b>${Q(tot)}</b></div><button class="btn r" id="cobrar" ${n?'':'disabled'}>Registrar</button></div>`;
+}
+function logClientes(){
+  const [lun,dom]=semana();
+  const l=creditos().filter(x=>dia(new Date(x.ts))>=lun&&dia(new Date(x.ts))<=dom);
+  return `<h3>Ventas a clientes de esta semana</h3>
+  <div class="panel">${agrupar(l,x=>dia(new Date(x.ts))).map(([f,g])=>`<div class="dia">${fechaLarga(f)}<span>${Q2(sumM(g))}</span></div>`+g.map(x=>`<div class="fila"><div class="n"><b>${esc(x.cli)}</b><small>${hora(x.ts)} · ${esc(x.it.join(', '))}</small></div><b>${Q2(x.m)}</b><span class="tag ${x.pag?'venta':'py'}">${x.pag?'Pagado':'Por cobrar'}</span></div>`).join('')).join('')||'<div class="vacio">Todavía no hay ventas a clientes esta semana</div>'}</div>`;
 }
 function bVender(){
   const v=document.getElementById('vista');
-  document.getElementById('canal').onclick=e=>{const b=e.target.closest('button');if(b){canalV=b.dataset.k;keep(()=>render())}};
+  document.getElementById('canal').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;
+    if((k==='credito')!==(canalV==='credito'))Object.keys(carro).forEach(id=>{if(esCliente(prod(id))!==(k==='credito'))delete carro[id]});
+    canalV=k;keep(()=>render())};
   document.getElementById('vn').oninput=e=>{notaV=e.target.value};
-  v.querySelector('.chips').onclick=e=>{const b=e.target.closest('button');if(b){catV=b.dataset.c;render()}};
+  const chips=v.querySelector('.chips');if(chips)chips.onclick=e=>{const b=e.target.closest('button');if(b){catV=b.dataset.c;render()}};
   v.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{carro[b.dataset.p]=(carro[b.dataset.p]||0)+1;keep(()=>render())});
   v.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const id=b.dataset.m;if(carro[id]){carro[id]--;if(!carro[id])delete carro[id]}keep(()=>render())});
   document.getElementById('cobrar').onclick=()=>{
@@ -423,9 +434,9 @@ function registrar(vuelto){
   if(faltan.length&&!confirm('No hay stock suficiente de:\n• '+faltan.join('\n• ')+'\n\n¿Registrar la venta de todos modos?'))return;
   const ts=Date.now(),tk=nid(),nota=notaV.trim(),t=totalCarro();
   Object.entries(carro).forEach(([id,c],i)=>{const p=prod(id);
-    op({op:'addMov',mov:{id:nid(),ts:ts+i,pid:id,tipo:'venta',cant:c,precio:precioDe(p,canalV),nota,canal:esCliente(p)?'credito':canalV,ticket:tk}})});
+    op({op:'addMov',mov:{id:nid(),ts:ts+i,pid:id,tipo:'venta',cant:c,precio:precioDe(p,canalV),nota,canal:esCliente(p)?'credito':(canalV==='credito'?'tienda':canalV),ticket:tk}})});
   carro={};notaV='';render();
-  aviso(CANALES[canalV]+' · '+Q(t)+(vuelto>0?' · Vuelto '+Q(vuelto):''));
+  aviso(CANAL_SEL[canalV]+' · '+Q(t)+(vuelto>0?' · Vuelto '+Q(vuelto):''));
 }
 
 /* ---------- Calculadora de cobro ---------- */
@@ -494,15 +505,13 @@ function gruposCli(pend){const cl={};pend.forEach(x=>{(cl[x.cli]=cl[x.cli]||{n:x
 function vCred(){
   const todos=creditos(),pend=todos.filter(x=>!x.pag),[lun,dom]=semana();
   const cobSem=todos.filter(x=>x.pag&&dia(new Date(x.pag))>=lun&&dia(new Date(x.pag))<=dom);
-  const nombrados=gruposCli(pend).filter(g=>g.n!=='Sin nombre');
   return `<h2>Tortilla al crédito</h2>
   <div class="kpis"><div class="kpi r"><span>Por cobrar</span><b>${Q(sumM(pend))}</b></div><div class="kpi"><span>Cobrado esta semana</span><b>${Q(sumM(cobSem))}</b></div></div>
-  ${nombrados.length?`<h3>Por cliente</h3><div class="panel">${nombrados.map((g,gi)=>`<div class="fila"><div class="n"><b>${esc(g.n)}</b><small>${g.l.length} venta${g.l.length>1?'s':''}</small></div><b>${Q2(g.t)}</b><button class="bt" data-cli="${esc(g.n)}" style="padding:8px 12px;border-radius:10px;border:2px solid var(--green);background:var(--green);color:#000;font:800 .8rem Figtree;cursor:pointer;text-transform:uppercase">Cobrar todo</button></div>`).join('')}</div>`:''}
   <h3>Pendiente de pago (por día de venta)</h3>
   <div class="panel r">${agrupar(pend,x=>dia(new Date(x.ts))).map(([f,l])=>`<div class="dia">${fechaLarga(f)}<span>${Q2(sumM(l))}</span></div>`+l.map(x=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><input class="nom" data-nom="${esc(x.k)}" value="${x.cli==='Sin nombre'?'':esc(x.cli)}" placeholder="Nombre del cliente" maxlength="60" aria-label="Nombre del cliente"><div class="fila" style="border:0;padding:0"><div class="n"><small>${hora(x.ts)}</small><b style="font-weight:600;font-size:.88rem">${esc(x.it.join(', '))}</b></div><b>${Q2(x.m)}</b><button class="bt" data-k="${esc(x.k)}" style="padding:8px 14px;border-radius:10px;border:2px solid var(--green);background:var(--green);color:#000;font:800 .8rem Figtree;cursor:pointer;text-transform:uppercase">Cobrar</button></div></div>`).join('')).join('')||'<div class="vacio">Nadie debe nada ✔</div>'}</div>
   <h3>Cobrado esta semana (lunes a domingo)</h3>
   <div class="panel">${agrupar(cobSem,x=>dia(new Date(x.pag))).map(([f,l])=>`<div class="dia">${fechaLarga(f)}<span>${Q2(sumM(l))}</span></div>`+l.map(x=>`<div class="fila"><div class="n"><b>${esc(x.cli)}</b><small>${esc(x.met)} · ${esc(x.it.join(', '))}</small></div><b>${Q2(x.m)}</b><button class="del" data-und="${esc(x.k)}" aria-label="Deshacer cobro" title="Deshacer">↩</button></div>`).join('')).join('')||'<div class="vacio">Esta semana todavía no hay cobros</div>'}</div>
-  <p class="nota">Cada semana va de lunes a domingo: el lunes la lista de cobrados empieza de cero (lo cobrado antes sigue en Historial y en el Excel). Lo que no se ha pagado nunca desaparece: sigue aquí hasta que lo cobres. Para anotar una venta a crédito: Vender → pestaña “Clientes”. El pago en efectivo se suma a la caja del día en que lo cobras; el pago por transferencia no.</p>`;
+  <p class="nota">Cada semana va de lunes a domingo: el lunes la lista de cobrados empieza de cero (lo cobrado antes sigue en Historial y en el Excel). Lo que no se ha pagado nunca desaparece: sigue aquí hasta que lo cobres. Para anotar una venta a crédito: Vender → botón “Clientes”. El pago en efectivo se suma a la caja del día en que lo cobras; el pago por transferencia no.</p>`;
 }
 let pagoKeys=[];
 function abrirPago(keys,nombre,monto){
@@ -575,7 +584,7 @@ function vCierre(){
   <div class="panel">${lista(c.cr)}<div class="resu t"><span>TOTAL</span><span>${Q2(c.tcr)}</span></div></div>
   <h3>Cobros de crédito (pagados hoy)</h3>
   <div class="panel">${lista(c.cob)}<div class="resu t"><span>TOTAL</span><span>${Q2(c.tcob)}</span></div></div>
-  <p class="nota" style="margin:-6px 0 14px">Pedidos Ya, transferencia y tarjeta salen de las ventas que registras en “Vender” con ese canal. Tortilla al crédito sale de la sección “Clientes” y no cuenta como efectivo hasta que el cliente pague (pestaña Crédito).</p>
+  <p class="nota" style="margin:-6px 0 14px">Pedidos Ya, transferencia y tarjeta salen de las ventas que registras en “Vender” con ese canal. Tortilla al crédito sale del botón “Clientes” de Vender y no cuenta como efectivo hasta que el cliente pague (pestaña Crédito).</p>
   <h3>Venta total del día</h3>
   <div class="panel">
    <div class="resu"><span>1. TOTAL 1 (tienda)</span><span>${Q2(c.tot1)}</span></div>
