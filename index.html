@@ -379,7 +379,7 @@ function vResumen(){
    <div class="resu"><span>Transferencia</span><span>${Q2(c.ttr)}</span></div>
    <div class="resu"><span>Venta con tarjeta de crédito</span><span>${Q2(c.ttj)}</span></div>
    <div class="resu"><span>Tortilla al crédito</span><span>${Q2(c.tcr)}</span></div>
-   <div class="resu t"><span>Por cobrar (crédito)</span><span>${Q2(creditos().filter(x=>!x.pag).reduce((a,x)=>a+x.m,0))}</span></div>
+   <div class="resu t"><span>Total</span><span>${Q2(vend)}</span></div>
   </div>
   <h3>Stock</h3>
   ${falta.length?`<div class="alerta" role="alert"><b>HACE FALTA</b><span>${visFalta.map(p=>esc(p.nombre)).join(' · ')}${!verStock&&falta.length>N_FALTA?` · y ${falta.length-N_FALTA} más`:''}</span></div>`:'<div class="alerta ok"><b>Todo en stock ✔</b></div>'}
