@@ -21,7 +21,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;pa
 main{max-width:960px;margin:0 auto;padding:10px 16px}
 nav{position:fixed;left:0;right:0;bottom:0;background:#000;border-top:3px solid #fff;display:flex;justify-content:center;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
 nav .in{display:flex;width:100%;max-width:960px}
-nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 9px;font:800 .5rem Figtree;letter-spacing:0;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 9px;font:800 9.5px Figtree;letter-spacing:0;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
 nav button svg{width:22px;height:22px;fill:currentColor}
 nav button.on{color:var(--green)}
 h2{font-family:'Lilita One';font-weight:400;font-size:1.5rem;letter-spacing:.02em;margin:10px 0 10px}
@@ -96,7 +96,8 @@ input:focus,select:focus{outline:3px solid var(--green)}
 .vuelto small{display:block;font-family:Figtree;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);font-weight:800}
 .vuelto.ok{background:var(--green);color:#000}.vuelto.ok small{color:#000}
 .vuelto.mal{background:var(--red);color:#fff}.vuelto.mal small{color:#fff}
-.dif{text-align:center;font-family:'Lilita One';font-size:1.35rem;padding:10px;border-radius:12px;border:3px solid #fff;margin-top:10px}
+.dif{text-align:center;font-family:'Lilita One';font-size:2.3rem;line-height:1.1;padding:22px 10px;border-radius:16px;border:4px solid #fff;margin-top:14px}
+.dif small{display:block;font-family:Figtree;font-weight:800;font-size:.8rem;letter-spacing:.14em;margin-bottom:4px}
 .dif.cero{background:#000;color:#fff}.dif.ok{background:var(--green);color:#000}.dif.mal{background:var(--red);color:#fff}
 .alerta{background:var(--red);color:#fff;border:3px solid #fff;border-radius:14px;padding:12px 14px;margin:8px 0 16px;box-shadow:5px 5px 0 #fff}
 .alerta b{display:block;font-family:'Lilita One';font-weight:400;font-size:1.3rem;letter-spacing:.04em;margin-bottom:2px}
@@ -115,6 +116,12 @@ input:focus,select:focus{outline:3px solid var(--green)}
 .cli .bt{padding:8px 14px;border-radius:10px;border:2px solid var(--green);background:var(--green);color:#000;font:800 .8rem Figtree;cursor:pointer;text-transform:uppercase}
 .cli .bt.g{background:#000;color:#fff;border-color:#fff}
 .opc{display:grid;gap:10px;margin:14px 0 6px}
+.fs{display:flex;gap:6px;justify-content:flex-end;margin-top:6px}
+.fs button{width:34px;height:30px;border-radius:8px;border:2px solid #fff;background:#000;color:#fff;font:800 .8rem Figtree;cursor:pointer;padding:0}
+.dia{font-size:.8rem;letter-spacing:.04em;font-weight:800;color:var(--green);display:flex;justify-content:space-between;gap:8px;padding:12px 0 4px;border-bottom:2px solid var(--line)}
+.dia:first-child{padding-top:0}
+.dia span{color:#fff;text-transform:none;letter-spacing:0}
+.nom{width:100%;padding:8px;font-size:.9rem;margin-bottom:6px;font-weight:700}
 #canal{display:grid;grid-template-columns:1fr 1fr;gap:8px}#canal button{padding:14px 4px;font-size:.8rem}
 #prev{width:100%;border:3px solid #fff;border-radius:10px;background:#fff;margin-top:12px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center;z-index:40}
@@ -139,7 +146,7 @@ input:focus,select:focus{outline:3px solid var(--green)}
 <div class="franja"></div>
 <header>
   <div class="marca">TortiMex<small>Inventario</small></div>
-  <div class="fecha"><div id="hoy"></div><div id="est" style="margin-top:3px;font-weight:700"></div></div>
+  <div class="fecha"><div id="hoy"></div><div id="est" style="margin-top:3px;font-weight:700"></div><div class="fs"><button id="fsm" aria-label="Letra más pequeña">A−</button><button id="fsp" aria-label="Letra más grande">A+</button></div></div>
 </header>
 <main id="vista"></main>
 <nav><div class="in" id="nav"></div></nav>
@@ -211,6 +218,7 @@ function aplicar(st,o){
   else if(o.op==='setProductos'){st.productos=copia(o.productos)}
   else if(o.op==='pagar'){st.mov.forEach(m=>{if(canalDe(m)==='credito'&&(m.ticket||m.id)===o.ticket){m.pagado=o.ts;m.pago=o.met}})}
   else if(o.op==='despagar'){st.mov.forEach(m=>{if(canalDe(m)==='credito'&&(m.ticket||m.id)===o.ticket){m.pagado=null;m.pago=''}})}
+  else if(o.op==='setNota'){st.mov.forEach(m=>{if(canalDe(m)==='credito'&&(m.ticket||m.id)===o.ticket)m.nota=o.nota})}
   else if(o.op==='setCorte'){st.cortes=st.cortes||{};st.cortes[o.fecha]=copia(o.datos)}
 }
 function op(o){aplicar(S,o);COLA.push(copia(o));guardar();sync()}
@@ -252,6 +260,11 @@ function pintarEstado(){
   const n=COLA.length;
   e.innerHTML=estadoRed==='ok'&&!n?'<i style="color:var(--green)">●</i> Sincronizado':estadoRed==='local'?'<i style="color:var(--mut)">●</i> Solo en este aparato':'<i style="color:var(--red)">●</i> Sin conexión'+(n?` · ${n} pendiente${n>1?'s':''}`:'');
 }
+
+/* ---------- Tamaño de letra (por aparato) ---------- */
+const FS=[100,112.5,125,137.5,150];let fsI=2;
+try{const v=parseInt(localStorage.getItem('tortimex-fs'),10);if(v>=0&&v<FS.length)fsI=v}catch(e){}
+function aplicarFs(){document.documentElement.style.fontSize=FS[fsI]+'%';try{localStorage.setItem('tortimex-fs',fsI)}catch(e){}}
 
 /* ---------- Utilidades ---------- */
 const pad=n=>String(n).padStart(2,'0');
@@ -380,7 +393,7 @@ let carro={},catV='Todos',canalV='tienda',notaV='';
 const cats=()=>['Todos',...CATS.filter(c=>S.productos.some(p=>p.cat===c)),...[...new Set(S.productos.map(p=>p.cat))].filter(c=>!CATS.includes(c))];
 const totalCarro=()=>Object.entries(carro).reduce((a,[id,c])=>a+c*precioDe(prod(id),canalV),0);
 function vVender(){
-  const lista=S.productos.filter(p=>catV==='Todos'||p.cat===catV);
+  const lista=S.productos.filter(p=>catV==='Todos'?!esCliente(p):p.cat===catV);
   const tot=totalCarro(),n=Object.values(carro).reduce((a,c)=>a+c,0);
   const hayCli=Object.keys(carro).some(id=>esCliente(prod(id)));
   const ph=hayCli?'Nombre del cliente':canalV==='transferencia'?'Quién transfirió / referencia':canalV==='tarjeta'?'Referencia (opcional)':canalV==='pedidosya'?'N.º de pedido (opcional)':'Nota (opcional)';
@@ -473,20 +486,23 @@ function bMov(){
 }
 
 /* ---------- Crédito: por cobrar ---------- */
+const fechaLarga=f=>{const t=new Date(f+'T12:00:00').toLocaleDateString('es-GT',{weekday:'long',day:'numeric',month:'long'});return t.charAt(0).toUpperCase()+t.slice(1)};
+const agrupar=(a,f)=>{const g={};a.forEach(x=>(g[f(x)]=g[f(x)]||[]).push(x));return Object.keys(g).sort().map(k=>[k,g[k]])};
+function semana(){const d=new Date(),dow=(d.getDay()+6)%7,lun=new Date(d.getFullYear(),d.getMonth(),d.getDate()-dow),dom=new Date(lun.getFullYear(),lun.getMonth(),lun.getDate()+6);return [dia(lun),dia(dom)]}
+const sumM=a=>a.reduce((t,x)=>t+x.m,0);
+function gruposCli(pend){const cl={};pend.forEach(x=>{(cl[x.cli]=cl[x.cli]||{n:x.cli,t:0,l:[]});cl[x.cli].t+=x.m;cl[x.cli].l.push(x)});return Object.values(cl).sort((a,b)=>b.t-a.t)}
 function vCred(){
-  const todos=creditos(),pend=todos.filter(x=>!x.pag),pag=todos.filter(x=>x.pag).sort((a,b)=>b.pag-a.pag).slice(0,15);
-  const cl={};pend.forEach(x=>{(cl[x.cli]=cl[x.cli]||{n:x.cli,t:0,l:[]});cl[x.cli].t+=x.m;cl[x.cli].l.push(x)});
-  const grupos=Object.values(cl).sort((a,b)=>b.t-a.t);
-  const total=pend.reduce((a,x)=>a+x.m,0);
+  const todos=creditos(),pend=todos.filter(x=>!x.pag),[lun,dom]=semana();
+  const cobSem=todos.filter(x=>x.pag&&dia(new Date(x.pag))>=lun&&dia(new Date(x.pag))<=dom);
+  const nombrados=gruposCli(pend).filter(g=>g.n!=='Sin nombre');
   return `<h2>Tortilla al crédito</h2>
-  <div class="kpis"><div class="kpi r"><span>Por cobrar</span><b>${Q(total)}</b></div><div class="kpi"><span>Clientes con deuda</span><b>${grupos.length}</b></div></div>
-  <h3>Pendiente de pago</h3>
-  <div class="panel r">${grupos.map((g,gi)=>`<div class="cli"><div class="cab2"><b>${esc(g.n)}</b><span>${Q2(g.t)}</span></div>
-    ${g.l.map(x=>`<div class="fila"><div class="n"><small>${dmy(dia(new Date(x.ts)))} ${hora(x.ts)}</small><b style="font-weight:600;font-size:.88rem">${esc(x.it.join(', '))}</b></div><b>${Q2(x.m)}</b><button class="bt" data-k="${esc(x.k)}">Cobrar</button></div>`).join('')}
-    ${g.l.length>1?`<button class="bt g" data-cli="${gi}" style="width:100%;margin-top:8px">Cobrar todo · ${Q2(g.t)}</button>`:''}</div>`).join('')||'<div class="vacio">Nadie debe nada ✔</div>'}</div>
-  <h3>Cobrados recientemente</h3>
-  <div class="panel">${pag.map(x=>`<div class="fila"><div class="n"><b>${esc(x.cli)}</b><small>Pagó ${dmy(dia(new Date(x.pag)))} · ${esc(x.met)} · ${esc(x.it.join(', '))}</small></div><b>${Q2(x.m)}</b><button class="del" data-und="${esc(x.k)}" aria-label="Deshacer cobro" title="Deshacer">↩</button></div>`).join('')||'<div class="vacio">Todavía no hay cobros</div>'}</div>
-  <p class="nota">Para anotar una venta a crédito: Vender → pestaña “Clientes”, escribe el nombre del cliente y registra. Aquí la cobras cuando pague. El pago en efectivo se suma al efectivo de la caja del día en que lo cobras; el pago por transferencia no.</p>`;
+  <div class="kpis"><div class="kpi r"><span>Por cobrar</span><b>${Q(sumM(pend))}</b></div><div class="kpi"><span>Cobrado esta semana</span><b>${Q(sumM(cobSem))}</b></div></div>
+  ${nombrados.length?`<h3>Por cliente</h3><div class="panel">${nombrados.map((g,gi)=>`<div class="fila"><div class="n"><b>${esc(g.n)}</b><small>${g.l.length} venta${g.l.length>1?'s':''}</small></div><b>${Q2(g.t)}</b><button class="bt" data-cli="${esc(g.n)}" style="padding:8px 12px;border-radius:10px;border:2px solid var(--green);background:var(--green);color:#000;font:800 .8rem Figtree;cursor:pointer;text-transform:uppercase">Cobrar todo</button></div>`).join('')}</div>`:''}
+  <h3>Pendiente de pago (por día de venta)</h3>
+  <div class="panel r">${agrupar(pend,x=>dia(new Date(x.ts))).map(([f,l])=>`<div class="dia">${fechaLarga(f)}<span>${Q2(sumM(l))}</span></div>`+l.map(x=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><input class="nom" data-nom="${esc(x.k)}" value="${x.cli==='Sin nombre'?'':esc(x.cli)}" placeholder="Nombre del cliente" maxlength="60" aria-label="Nombre del cliente"><div class="fila" style="border:0;padding:0"><div class="n"><small>${hora(x.ts)}</small><b style="font-weight:600;font-size:.88rem">${esc(x.it.join(', '))}</b></div><b>${Q2(x.m)}</b><button class="bt" data-k="${esc(x.k)}" style="padding:8px 14px;border-radius:10px;border:2px solid var(--green);background:var(--green);color:#000;font:800 .8rem Figtree;cursor:pointer;text-transform:uppercase">Cobrar</button></div></div>`).join('')).join('')||'<div class="vacio">Nadie debe nada ✔</div>'}</div>
+  <h3>Cobrado esta semana (lunes a domingo)</h3>
+  <div class="panel">${agrupar(cobSem,x=>dia(new Date(x.pag))).map(([f,l])=>`<div class="dia">${fechaLarga(f)}<span>${Q2(sumM(l))}</span></div>`+l.map(x=>`<div class="fila"><div class="n"><b>${esc(x.cli)}</b><small>${esc(x.met)} · ${esc(x.it.join(', '))}</small></div><b>${Q2(x.m)}</b><button class="del" data-und="${esc(x.k)}" aria-label="Deshacer cobro" title="Deshacer">↩</button></div>`).join('')).join('')||'<div class="vacio">Esta semana todavía no hay cobros</div>'}</div>
+  <p class="nota">Cada semana va de lunes a domingo: el lunes la lista de cobrados empieza de cero (lo cobrado antes sigue en Historial y en el Excel). Lo que no se ha pagado nunca desaparece: sigue aquí hasta que lo cobres. Para anotar una venta a crédito: Vender → pestaña “Clientes”. El pago en efectivo se suma a la caja del día en que lo cobras; el pago por transferencia no.</p>`;
 }
 let pagoKeys=[];
 function abrirPago(keys,nombre,monto){
@@ -494,12 +510,14 @@ function abrirPago(keys,nombre,monto){
   document.getElementById('pago').classList.remove('hide');
 }
 function bCred(){
-  const todos=creditos().filter(x=>!x.pag);
-  const cl={};todos.forEach(x=>{(cl[x.cli]=cl[x.cli]||{n:x.cli,t:0,l:[]});cl[x.cli].t+=x.m;cl[x.cli].l.push(x)});
-  const grupos=Object.values(cl).sort((a,b)=>b.t-a.t);
-  document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const x=todos.find(y=>y.k===b.dataset.k);abrirPago([x.k],x.cli,x.m)});
-  document.querySelectorAll('[data-cli]').forEach(b=>b.onclick=()=>{const g=grupos[+b.dataset.cli];abrirPago(g.l.map(x=>x.k),g.n,g.t)});
+  const pend=creditos().filter(x=>!x.pag),grupos=gruposCli(pend);
+  document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const x=pend.find(y=>y.k===b.dataset.k);abrirPago([x.k],x.cli,x.m)});
+  document.querySelectorAll('[data-cli]').forEach(b=>b.onclick=()=>{const g=grupos.find(y=>y.n===b.dataset.cli);abrirPago(g.l.map(x=>x.k),g.n,g.t)});
   document.querySelectorAll('[data-und]').forEach(b=>b.onclick=()=>{if(confirm('¿Deshacer este cobro? Vuelve a quedar por cobrar.')){op({op:'despagar',ticket:b.dataset.und});render();aviso('Cobro deshecho')}});
+  document.querySelectorAll('[data-nom]').forEach(i=>i.onchange=()=>{
+    op({op:'setNota',ticket:i.dataset.nom,nota:i.value.trim()});aviso('Nombre guardado');
+    setTimeout(()=>{const a=document.activeElement;if(!(a&&/INPUT/.test(a.tagName)))render()},400);
+  });
 }
 const cerrarPago=()=>document.getElementById('pago').classList.add('hide');
 document.getElementById('pg-no').onclick=cerrarPago;
@@ -531,14 +549,22 @@ function vCierre(){
     <div><label for="cr-resp">Responsable</label><input id="cr-resp" maxlength="40" value="${esc(d.resp)}"></div>
     <div><label for="cr-hora">Hora</label><input id="cr-hora" type="time" value="${esc(d.hora||'')}"></div>
   </div>
-  <h3>Producción del día</h3>
-  <div class="panel">${c.produccion.length?c.produccion.map((x,i)=>`<div class="resu"><span>${i+1}. ${esc(x)}</span></div>`).join(''):'<div class="vacio" style="padding:8px">Sin entradas registradas</div>'}</div>
-  <h3>Ventas de tienda</h3>
-  <div class="panel">${filasTienda||'<div class="vacio" style="padding:8px">Sin ventas de tienda</div>'}<div class="resu t"><span>TOTAL 1</span><span>${Q2(c.tot1)}</span></div></div>
+  <h3>Cuadre de caja</h3>
+  <div class="panel r">
+   <label for="cr-ef" style="margin-top:0">Efectivo físico contado</label>
+   <input id="cr-ef" inputmode="decimal" placeholder="Q" value="${d.ef==null?'':d.ef}">
+   <div class="resu" style="margin-top:10px"><span>TOTAL 1 + cobros de crédito en efectivo</span><span>${Q2(c.tot1+c.tcobEf)}</span></div>
+   <div class="resu"><span>Gastos</span><span id="e-g" style="color:var(--red)">${c.tg?'−'+Q2(c.tg):Q2(0)}</span></div>
+   <div class="resu t"><span>Debería haber en caja</span><span id="e-esp">${Q2(c.tot1+c.tcobEf-c.tg)}</span></div>
+   <div class="dif cero" id="dif"></div></div>
   <h3>Gastos</h3>
   <div class="panel r" id="gastos">${d.gastos.map((g,i)=>`<div class="lin"><i>${i+1}</i><input class="g-c" data-i="${i}" placeholder="Concepto" value="${esc(g.c||'')}"><input class="g-m" data-i="${i}" inputmode="decimal" placeholder="Q" value="${g.m==null?'':g.m}"></div>`).join('')}
    <button class="btn g" id="addg" style="margin-top:6px">+ Agregar línea</button>
    <div class="resu t"><span>TOTAL</span><span id="t-g">${Q2(c.tg)}</span></div></div>
+  <h3>Producción del día</h3>
+  <div class="panel">${c.produccion.length?c.produccion.map((x,i)=>`<div class="resu"><span>${i+1}. ${esc(x)}</span></div>`).join(''):'<div class="vacio" style="padding:8px">Sin entradas registradas</div>'}</div>
+  <h3>Ventas de tienda</h3>
+  <div class="panel">${filasTienda||'<div class="vacio" style="padding:8px">Sin ventas de tienda</div>'}<div class="resu t"><span>TOTAL 1</span><span>${Q2(c.tot1)}</span></div></div>
   <h3>Pedidos Ya</h3>
   <div class="panel">${lista(c.py)}<div class="resu t"><span>TOTAL</span><span>${Q2(c.tpy)}</span></div></div>
   <h3>Transferencia</h3>
@@ -559,13 +585,6 @@ function vCierre(){
    <div class="resu"><span>5. VENTA CON TARJETA DE CRÉDITO</span><span>${Q2(c.ttj)}</span></div>
    <div class="resu"><span>6. TORTILLA AL CRÉDITO</span><span>${Q2(c.tcr)}</span></div>
    <div class="resu t"><span>TOTAL</span><span id="v-t">${Q2(c.ventaTotal)}</span></div></div>
-  <h3>Efectivo en caja</h3>
-  <div class="panel r">
-   <label for="cr-ef" style="margin-top:0">Efectivo físico contado</label>
-   <input id="cr-ef" inputmode="decimal" placeholder="Q" value="${d.ef==null?'':d.ef}">
-   <div class="resu" style="margin-top:10px"><span>Efectivo físico + gastos</span><span id="e-eg">${Q2(c.efGastos)}</span></div>
-   <div class="resu"><span>TOTAL 1 + cobros de crédito en efectivo</span><span>${Q2(c.tot1+c.tcobEf)}</span></div>
-   <div class="dif cero" id="dif"></div></div>
   <h3>Control de producto</h3>
   <div class="panel">${d.control.map((k,i)=>`<div class="lin"><i>${i+1}</i><input class="k-c" data-i="${i}" placeholder="Concepto" value="${esc(k.c||'')}"><input class="k-v" data-i="${i}" placeholder="Cant." value="${esc(k.v||'')}"></div>`).join('')}</div>
   <div class="grid2"><button class="btn" id="img-c">Compartir imagen</button><button class="btn g" id="img-d" style="border:3px solid #fff">Descargar imagen</button></div>
@@ -583,12 +602,12 @@ function pintarCierre(){
   const d=leerCierre(),c=cierre(fechaC);
   const tg=d.gastos.reduce((a,x)=>a+(+x.m||0),0),ef=+d.ef||0,dif=Math.round((ef+tg-(c.tot1+c.tcobEf))*100)/100;
   const set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t};
-  set('t-g',Q2(tg));set('v-g',Q2(tg));set('v-t',Q2(c.tot1+tg+c.tpy+c.ttr+c.ttj+c.tcr));set('e-eg',Q2(ef+tg));
+  set('t-g',Q2(tg));set('v-g',Q2(tg));set('v-t',Q2(c.tot1+tg+c.tpy+c.ttr+c.ttj+c.tcr));set('e-g',tg?'−'+Q2(tg):Q2(0));set('e-esp',Q2(c.tot1+c.tcobEf-tg));
   const e=document.getElementById('dif');
-  if(d.ef==null){e.className='dif cero';e.textContent='Escribe el efectivo contado'}
-  else if(dif===0){e.className='dif cero';e.textContent='Caja cuadrada'}
-  else if(dif<0){e.className='dif mal';e.textContent='FALTA DINERO · '+Q2(-dif)}
-  else{e.className='dif ok';e.textContent='SOBRA DINERO · '+Q2(dif)}
+  if(d.ef==null){e.className='dif cero';e.innerHTML='<small>CUADRE DE CAJA</small>Escribe el efectivo contado'; e.style.fontSize='1.2rem'}
+  else if(dif===0){e.className='dif cero';e.style.fontSize='1.6rem';e.innerHTML='Caja cuadrada ✔'}
+  else if(dif<0){e.className='dif mal';e.style.fontSize='';e.innerHTML='<small>FALTA DINERO</small>'+Q2(-dif)}
+  else{e.className='dif ok';e.style.fontSize='';e.innerHTML='<small>SOBRA DINERO</small>'+Q2(dif)}
 }
 let tG,pendCierre=false;
 function flushCierre(){if(pendCierre&&document.getElementById('cr-resp')){clearTimeout(tG);guardarCierre()}}
@@ -687,11 +706,15 @@ async function dibujarCorte(f){
     cell(RX,yr,30,H,i+1,{align:'center'});cell(RX+30,yr,530,H,l,{bold:i===1||i===3});cell(RX+560,yr,130,H,m$(v),{align:'right'});yr+=H});
   cell(RX,yr,560,H,'TOTAL',{bold:1,align:'right'});cell(RX+560,yr,130,H,Q2(c0.ventaTotal),{bold:1,align:'right'});yr+=H+16;
   cell(RX,yr,690,H,'EFECTIVO EN CAJA',{bold:1,align:'center'});yr+=H;
-  cell(RX,yr,30,H,1,{align:'center'});cell(RX+30,yr,530,H,'EFECTIVO FÍSICO + GASTOS');cell(RX+560,yr,130,H,d.ef==null?'':Q2(c0.efGastos),{align:'right'});yr+=H;
+  cell(RX,yr,30,H,1,{align:'center'});cell(RX+30,yr,530,H,'EFECTIVO FÍSICO CONTADO');cell(RX+560,yr,130,H,d.ef==null?'':Q2(c0.ef),{align:'right'});yr+=H;
   cell(RX,yr,30,H,2,{align:'center'});cell(RX+30,yr,530,H,'TOTAL 1 + COBROS DE CRÉDITO (EFECTIVO)',{bold:1,size:13});cell(RX+560,yr,130,H,Q2(c0.tot1+c0.tcobEf),{align:'right'});yr+=H;
+  cell(RX,yr,30,H,3,{align:'center'});cell(RX+30,yr,530,H,'GASTOS',{bold:1});cell(RX+560,yr,130,H,c0.tg?'-'+Q2(c0.tg):'',{align:'right',bold:1,color:'#e63946'});yr+=H;
+  cell(RX,yr,30,H,4,{align:'center'});cell(RX+30,yr,530,H,'DEBERÍA HABER EN CAJA',{bold:1});cell(RX+560,yr,130,H,Q2(c0.tot1+c0.tcobEf-c0.tg),{align:'right',bold:1});yr+=H;
   const falt=d.ef!=null&&c0.dif<-0.004?-c0.dif:0,sobr=d.ef!=null&&c0.dif>0.004?c0.dif:0;
-  cell(RX,yr,30,H,3,{align:'center'});cell(RX+30,yr,110,H,'FALTANTE',{bold:1,size:13});cell(RX+140,yr,100,H,m$(falt),{align:'right',bold:1,fill:falt?'#e63946':null,color:falt?'#fff':null});
-  cell(RX+240,yr,220,H,'SOBRANTE',{align:'center',fill:GR,size:13});cell(RX+460,yr,100,H,'');cell(RX+560,yr,130,H,m$(sobr),{align:'right',bold:1,fill:sobr?'#10b981':null});yr+=H+16;
+  cell(RX,yr,30,H,5,{align:'center'});cell(RX+30,yr,110,H,'FALTANTE',{bold:1,size:13});cell(RX+140,yr,100,H,m$(falt),{align:'right',bold:1,fill:falt?'#e63946':null,color:falt?'#fff':null});
+  cell(RX+240,yr,220,H,'SOBRANTE',{align:'center',fill:GR,size:13});cell(RX+460,yr,100,H,'');cell(RX+560,yr,130,H,m$(sobr),{align:'right',bold:1,fill:sobr?'#10b981':null});yr+=H+6;
+  if(d.ef!=null){cell(RX,yr,690,46,falt?'FALTA DINERO  '+Q2(falt):sobr?'SOBRA DINERO  '+Q2(sobr):'CAJA CUADRADA',{bold:1,align:'center',size:24,fill:falt?'#e63946':sobr?'#10b981':null,color:falt?'#fff':'#000'});yr+=46}
+  yr+=16;
   cell(RX,yr,690,H,'CONTROL DE PRODUCTO',{bold:1,align:'center'});yr+=H;
   d.control.forEach((k,i)=>{cell(RX,yr,30,H,i+1,{align:'center'});cell(RX+30,yr,400,H,(k.c||'').toUpperCase(),{size:13});cell(RX+430,yr,260,H,k.v||'',{align:'right'});yr+=H});
   /* recorte */
@@ -757,6 +780,9 @@ function bProd(){
     setP();render();aviso('Producto agregado');
   };
 }
+aplicarFs();
+document.getElementById('fsm').onclick=()=>{if(fsI>0){fsI--;aplicarFs()}};
+document.getElementById('fsp').onclick=()=>{if(fsI<FS.length-1){fsI++;aplicarFs()}};
 render();pintarEstado();sync();
 setInterval(sync,15000);
 addEventListener('online',sync);
