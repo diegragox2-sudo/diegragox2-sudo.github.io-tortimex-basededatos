@@ -189,7 +189,29 @@ input:focus,select:focus{outline:3px solid var(--green)}
 .venta-shell .total .btn:disabled{opacity:.45;cursor:not-allowed}
 .venta-shell .vacio{color:var(--mut)}
 @media(min-width:650px){.venta-menu{grid-template-columns:repeat(3,minmax(0,1fr))}.venta-shell{padding:20px}.venta-shell #canal{grid-template-columns:repeat(5,minmax(0,1fr))}.marca-logo{width:145px;height:90px}}
-@media(max-width:380px){.venta-menu{grid-template-columns:1fr}.venta-producto{display:grid;grid-template-columns:42px 1fr auto;align-items:center}.venta-producto .vp-icon{grid-row:span 2}.venta-producto .vp-meta{grid-column:2}.venta-producto .cant{grid-column:3;grid-row:1/3;min-width:104px}}
+
+/* ===== Vender: tarjetas grandes estilo menú, paleta de la app ===== */
+.venta-top{background:var(--card);border:3px solid #fff;box-shadow:4px 4px 0 var(--red);justify-content:center;padding:8px 14px}
+.venta-top .vt-logo{width:130px;height:auto;max-height:96px;object-fit:contain;flex:none;background:#000;border:3px solid #fff;border-radius:16px;padding:3px}
+.venta-top small{margin:0;color:var(--green);font-size:.8rem;letter-spacing:.1em}
+.venta-shell #canal button{font-size:.8rem;padding:13px 6px}
+.venta-shell .chips button{font-size:.9rem;padding:9px 16px}
+.venta-menu{gap:14px}
+.venta-producto{border:3px solid #fff;border-radius:18px;padding:14px 12px 12px;gap:10px;box-shadow:0 6px 0 var(--green);align-items:stretch}
+.venta-producto.sel{border-color:var(--green);box-shadow:0 6px 0 var(--red)}
+.venta-producto .vp-icon{height:62px;width:62px;border-radius:50%;border:3px solid #fff;font-size:2rem;align-self:center}
+.venta-producto .vp-nombre{font-size:1.08rem;text-align:center;min-height:2.4em;display:flex;align-items:center;justify-content:center}
+.venta-producto .vp-meta{justify-content:center;gap:8px}
+.venta-producto .vp-precio{font-size:1.7rem}
+.venta-producto .vp-stock{font-size:.78rem;padding:3px 9px}
+.venta-producto .cant{background:#000;border:3px solid #fff;border-radius:16px;padding:6px;gap:6px;justify-content:space-between}
+.venta-producto .cant button{width:60px;height:60px;border-radius:12px;border:3px solid #fff;background:var(--card);color:#fff;font:800 2rem Figtree,sans-serif;line-height:1;padding:0}
+.venta-producto .cant button.mas{background:var(--green);color:#000;border:3px solid #fff}
+.venta-producto .cant button:active{transform:scale(.94)}
+.venta-producto .cant output{color:#fff;font:400 2.2rem 'Lilita One',Figtree,sans-serif;min-width:44px;text-align:center}
+.venta-shell .total b{font:400 2.1rem 'Lilita One',Figtree,sans-serif}
+.venta-shell .total .btn{font:400 1.25rem 'Lilita One',Figtree,sans-serif;letter-spacing:.04em;padding:14px 20px}
+@media(max-width:380px){.venta-menu{grid-template-columns:1fr}.venta-top .vt-logo{width:92px}}
 </style>
 </head>
 <body>
@@ -449,26 +471,21 @@ function vVender(){
   const tot=totalCarro(),n=Object.values(carro).reduce((a,c)=>a+c,0);
   const ph=cli?'Nombre del cliente':canalV==='transferencia'?'Quién transfirió / referencia':canalV==='tarjeta'?'Referencia (opcional)':canalV==='pedidosya'?'N.º de pedido (opcional)':'Nota (opcional)';
   const icono=p=>{
-    const t=(p.nombre+' '+p.cat).toLowerCase();
-    if(/tortilla|taco|quesadilla|burrito/.test(t))return '🌮';
-    if(/nacho|frito|papas|chips/.test(t))return '🍟';
-    if(/bebida|agua|gaseosa|jugo|refresco/.test(t))return '🥤';
-    if(/dulce|chocolate|galleta|postre/.test(t))return '🍪';
-    if(/pan|pastel/.test(t))return '🥐';
-    return '🍔';
+    const t=(p.nombre+' '+p.cat).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const R=[[/cliente/,'👤'],[/tortilla/,'🫓'],[/tostada/,'🍘'],[/taco cerrado/,'🌮'],[/taco abierto/,'🥙'],[/taco/,'🌮'],[/nacho/,'🌽'],[/fajita/,'🌯'],[/pizz/,'🍕'],[/canasta/,'🧺'],[/chalupa/,'🥟'],[/mopa/,'🥨'],[/papalina|papa/,'🍟'],[/queso|lacteo/,'🧀'],[/lata/,'🥫'],[/coca|lts|litro|gaseosa/,'🍾'],[/mani/,'🥜'],[/jugo|agua|bebida|refresco/,'🥤'],[/dulce|chocolate|galleta|postre/,'🍪'],[/pan\b|pastel/,'🥐'],[/frito|chips/,'🍟']];
+    const m=R.find(r=>r[0].test(t));return m?m[1]:'🛒';
   };
   return `<section class="venta-shell">
     <div class="venta-top">
-      <div><div class="venta-brand">¡Elige tus favoritos!</div><small>TortiMex · Sabor que alegra tu día</small></div>
-      <div class="venta-sello">¡Qué<br>rico!</div>
-    </div>
+      <img class="vt-logo" src="${document.querySelector('.marca-logo').src}" alt="TortiMex">
+      </div>
     <h2>${cli?'Venta al crédito':'Menú de productos'}</h2>
     <div class="seg" id="canal">${Object.entries(CANAL_SEL).map(([k,v])=>`<button data-k="${k}" class="${k===canalV?'on':''} ${k==='pedidosya'?'py':k==='credito'?'cl':''}">${v}</button>`).join('')}</div>
     <input id="vn" maxlength="60" placeholder="${ph}" value="${esc(notaV)}" style="margin:10px 0" aria-label="Nota">
     ${cli?'<p class="nota" style="margin:-2px 0 10px">Estas ventas quedan como <b>tortilla al crédito</b>: se cobran en la pestaña <b>Crédito</b>.</p>':`<div class="chips">${cats().map(c=>`<button data-c="${esc(c)}" class="${c===catV?'on':''}">${esc(c)}</button>`).join('')}</div>`}
     <div class="panel venta-menu">${lista.map(p=>{
       const stock=stockDe(p.id),cantidad=carro[p.id]||0;
-      return `<article class="venta-producto">
+      return `<article class="venta-producto${cantidad?' sel':''}">
         <div class="vp-icon" aria-hidden="true">${icono(p)}</div>
         <div class="vp-nombre">${esc(p.nombre)}</div>
         <div class="vp-meta"><span class="vp-precio">${Q(precioDe(p,canalV))}</span>${esCliente(p)?'':`<span class="vp-stock ${stock<=0?'agotado':''}">${stock>0?stock+' disponibles':'Agotado'}</span>`}</div>
