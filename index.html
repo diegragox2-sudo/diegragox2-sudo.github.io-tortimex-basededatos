@@ -245,6 +245,45 @@ input:focus,select:focus{outline:3px solid var(--green)}
 .ajrow .orig{margin:0}
 .ajtot{margin-top:0}
 .venta-shell .total .btn{padding:14px 14px;font-size:1.1rem}
+
+/* ===== ventana del pedido ===== */
+.hoja.ped{max-height:92vh;overflow-y:auto}
+.ped-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.ped-h h2{margin:0}
+.ped-x{width:44px;height:44px;border-radius:50%;border:2px solid #fff;background:#000;color:#fff;font:800 1.1rem Figtree;cursor:pointer;flex:none}
+.ped-l{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ped-n{flex:1;min-width:0}.ped-n b{display:block}.ped-n small{color:var(--mut);font-weight:700}
+.ped-s{display:flex;align-items:center;gap:6px;flex:none}
+.ped-s button{width:40px;height:40px;border-radius:10px;border:2px solid #fff;background:#000;color:#fff;font:800 1.4rem Figtree;cursor:pointer;line-height:1;padding:0}
+.ped-s button[data-pp]{background:var(--green);color:#000}
+.ped-s span{min-width:28px;text-align:center;font:400 1.4rem 'Lilita One',Figtree,sans-serif}
+.ped-m{min-width:62px;text-align:right}
+.ped-dif{margin:6px 0 0;font-weight:700;font-size:.85rem;color:var(--mut)}
+.ped-cr{margin:12px 0 0;padding:10px;border:2px dashed var(--mut);border-radius:10px;font-weight:700;font-size:.9rem}
+.vp-stock.cr{background:var(--red);color:#fff}
+
+/* ===== ventana lateral ===== */
+#pedido{align-items:stretch;justify-content:flex-end}
+.hoja.ped{max-width:440px;width:100%;height:100%;max-height:none;overflow:hidden;border:0;border-left:3px solid #fff;border-radius:0;box-shadow:-6px 0 0 var(--green);padding:0;display:flex;flex-direction:column;animation:entra .22s ease-out}
+@keyframes entra{from{transform:translateX(100%)}to{transform:none}}
+#ped-body{display:flex;flex-direction:column;height:100%;min-height:0}
+.ped-h{padding:14px 16px;border-bottom:2px solid var(--line);margin:0;flex:none}
+.ped-canal{display:inline-block;margin-top:4px;background:var(--green);color:#000;border-radius:999px;padding:2px 12px;font-weight:800;font-size:.8rem}
+.ped-sc{flex:1;overflow-y:auto;padding:4px 16px 16px;-webkit-overflow-scrolling:touch}
+.ped-sec{padding:14px 0 6px;border-bottom:1px solid var(--line)}
+.ped-t{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:1.05rem;color:#fff;letter-spacing:0;text-transform:none}
+.ped-t i{width:28px;height:28px;border-radius:50%;background:var(--green);color:#000;display:inline-flex;align-items:center;justify-content:center;font:800 .9rem Figtree;font-style:normal;flex:none}
+.ped-t small{color:var(--mut);font-weight:700;font-size:.8rem}
+.ped-grande{font-size:1.8rem!important;font-weight:800;padding:12px}
+.ped-ayuda{margin:6px 0 0;color:var(--mut);font-size:.8rem;font-weight:600}
+.ped-f{flex:none;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:3px solid #fff;background:var(--card)}
+.ped-ft{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.ped-ft span{font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);font-size:.8rem}
+.ped-ft b{font:400 2.4rem 'Lilita One',Figtree,sans-serif;color:var(--green);line-height:1}
+.ped-f .btn{width:100%;padding:16px;font-size:1.2rem}
+.ped-volver{width:100%;margin-top:8px;background:none;border:0;color:var(--mut);font:800 .9rem Figtree;padding:8px;cursor:pointer}
+
+.vg{margin:18px 0 8px;color:var(--green);font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid var(--line);padding-bottom:6px}
+.vg:first-of-type{margin-top:6px}
 </style>
 </head>
 <body>
@@ -264,6 +303,7 @@ input:focus,select:focus{outline:3px solid var(--green)}
     <div class="opc"><button class="btn" id="pg-ef">Pagó en efectivo</button><button class="btn g" id="pg-tr" style="border:3px solid #fff">Pagó por transferencia</button><button class="btn g" id="pg-no" style="border:3px solid var(--red)">Cancelar</button></div>
   </div>
 </div>
+<div class="modal hide" id="pedido" role="dialog" aria-modal="true" aria-label="Pedido"><div class="hoja ped"><div id="ped-body"></div></div></div>
 <div class="modal hide" id="cobro" role="dialog" aria-modal="true" aria-label="Cobro">
   <div class="hoja">
     <h2>Cobrar</h2>
@@ -353,6 +393,10 @@ async function sync(){
         S.productos=S.productos.concat(CLIENTES.map((p,i)=>({id:'c'+(i+1),nombre:p[0],cat:p[1],precio:p[2],pp:p[3],min:0})));
         COLA.push({op:'setProductos',productos:copia(S.productos)});setTimeout(sync,300);
       }
+      if(S.productos.some(p=>p.cat==='Clientes'&&/^Tortilla Q/.test(p.nombre))){ // vuelven a llamarse Cliente N (el nombre Tortilla se muestra solo en las ventas normales)
+        S.productos.forEach(p=>{if(p.cat==='Clientes'&&/^Tortilla Q/.test(p.nombre))p.nombre='Cliente '+(/^c(\d)$/.test(p.id)?p.id.slice(1):(S.productos.filter(x=>x.cat==='Clientes').indexOf(p)+1))});
+        COLA.push({op:'setProductos',productos:copia(S.productos)});setTimeout(sync,300);
+      }
       if(S.productos.some(p=>p.cat==='Frituras'&&/^(taco|tostada)/i.test(p.nombre))){ // separar Tacos y Tostadas de Frituras
         S.productos.forEach(p=>{if(p.cat==='Frituras'&&/^(taco|tostada)/i.test(p.nombre))p.cat=/^taco/i.test(p.nombre)?'Tacos':'Tostadas'});
         COLA.push({op:'setProductos',productos:copia(S.productos)});setTimeout(sync,300);
@@ -388,6 +432,8 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const prod=id=>S.productos.find(p=>p.id===id);
 const stockDe=id=>S.mov.reduce((a,m)=>m.pid!==id?a:a+(m.tipo==='entrada'?m.cant:-m.cant),0);
 const esCliente=p=>!!p&&p.cat==='Clientes';
+const nomV=p=>esCliente(p)&&canalV!=='credito'?'Tortilla Q'+(p.precio%1?(+p.precio).toFixed(2):p.precio):p.nombre;
+const aCredito=p=>esCliente(p)&&(canalV==='tienda'||canalV==='credito'); // en Tienda y Clientes se anotan como tortilla al crédito
 const estado=p=>esCliente(p)?'':(stockDe(p.id)<=0?'cero':'');
 const precioDe=(p,canal)=>!esCliente(p)&&canal==='pedidosya'&&p.pp!=null&&p.pp!==''?+p.pp:+p.precio;
 const canalDe=m=>m.canal||'tienda';
@@ -510,30 +556,41 @@ const totalFinal=()=>totalV!=null?totalV:totalCarro();
 const totalLista=()=>Object.entries(carro).reduce((a,[id,c])=>a+c*precioDe(prod(id),canalV),0);
 function vVender(){
   const cli=canalV==='credito';
-  const lista=cli?S.productos.filter(esCliente):S.productos.filter(p=>!esCliente(p)&&(catV==='Todos'||p.cat===catV));
+  const lista=cli?S.productos.filter(esCliente):S.productos.filter(p=>esCliente(p)?(catV==='Tortilla'||catV==='Todos'):(catV==='Todos'||p.cat===catV));
+  if(!cli&&catV==='Todos'){const cl=lista.filter(esCliente),r=lista.filter(p=>!esCliente(p));let i=-1;r.forEach((p,j)=>{if(p.cat==='Tortilla')i=j});r.splice(i+1,0,...cl);lista.splice(0,lista.length,...r)}
   const tot=totalCarro(),n=Object.values(carro).reduce((a,c)=>a+c,0);
   const ph=cli?'Nombre del cliente':canalV==='transferencia'?'Quién transfirió / referencia':canalV==='tarjeta'?'Referencia (opcional)':canalV==='pedidosya'?'N.º de pedido (opcional)':'Nota (opcional)';
   const icono=p=>{
     const t=(p.nombre+' '+p.cat).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    const R=[[/cliente/,'👤'],[/tortilla/,'🫓'],[/tostada/,'🍘'],[/taco cerrado/,'🌮'],[/taco abierto/,'🥙'],[/taco/,'🌮'],[/nacho/,'🌽'],[/fajita/,'🌯'],[/pizz/,'🍕'],[/canasta/,'🧺'],[/chalupa/,'🥟'],[/mopa/,'🥨'],[/papalina|papa/,'🍟'],[/queso|lacteo/,'🧀'],[/lata/,'🥫'],[/coca|lts|litro|gaseosa/,'🍾'],[/mani/,'🥜'],[/jugo|agua|bebida|refresco/,'🥤'],[/dulce|chocolate|galleta|postre/,'🍪'],[/pan\b|pastel/,'🥐'],[/frito|chips/,'🍟']];
+    const R=[[/clientes/,'🫓'],[/tortilla/,'🫓'],[/tostada/,'🍘'],[/taco cerrado/,'🌮'],[/taco abierto/,'🥙'],[/taco/,'🌮'],[/nacho/,'🌽'],[/fajita/,'🌯'],[/pizz/,'🍕'],[/canasta/,'🧺'],[/chalupa/,'🥟'],[/mopa/,'🥨'],[/papalina|papa/,'🍟'],[/queso|lacteo/,'🧀'],[/lata/,'🥫'],[/coca|lts|litro|gaseosa/,'🍾'],[/mani/,'🥜'],[/jugo|agua|bebida|refresco/,'🥤'],[/dulce|chocolate|galleta|postre/,'🍪'],[/pan\b|pastel/,'🥐'],[/frito|chips/,'🍟']];
     const m=R.find(r=>r[0].test(t));return m?m[1]:'🛒';
   };
-  const mostrarNota=cli||canalV==='transferencia'||notaAbierta||!!notaV;
-  return `<section class="venta-shell">
-    <div class="seg" id="canal">${Object.entries(CANAL_SEL).map(([k,v])=>`<button data-k="${k}" class="${k===canalV?'on':''} ${k==='pedidosya'?'py':k==='credito'?'cl':''}">${v}</button>`).join('')}</div>
-    ${mostrarNota?`<input id="vn" maxlength="60" placeholder="${ph}" value="${esc(notaV)}" style="margin:10px 0" aria-label="Nota">`:`<button class="notabtn" id="vnb">＋ Agregar nota</button>`}
-    ${cli?'<p class="nota" style="margin:-2px 0 10px">Estas ventas quedan como <b>tortilla al crédito</b>: se cobran en la pestaña <b>Crédito</b>.</p>':`<div class="chips">${cats().map(c=>`<button data-c="${esc(c)}" class="${c===catV?'on':''}">${esc(c)}</button>`).join('')}</div>`}
-    <div class="venta-menu">${lista.map(p=>{
+  const tarjeta=p=>{
       const stock=stockDe(p.id),cantidad=carro[p.id]||0,mod=precioV[p.id]!=null&&precioV[p.id]!==precioDe(p,canalV);
       return `<article class="venta-producto${cantidad?' sel':''}" data-id="${p.id}">
         <div class="vp-icon" aria-hidden="true">${icono(p)}</div>
-        <div class="vp-info"><div class="vp-nombre">${esc(p.nombre)}</div>
-          <div class="vp-meta"><button class="vp-precio${mod?' mod':''}" data-pr="${p.id}" aria-label="Cambiar precio">${Q(precioVenta(p))} ✎</button>${esCliente(p)?'':`<span class="vp-stock ${stock<=0?'agotado':''}">${stock>0?stock+' disponibles':'Agotado'}</span>`}</div></div>
-        <div class="cant"><button data-m="${p.id}" aria-label="Quitar uno">−</button><input class="qty" data-q="${p.id}" inputmode="numeric" pattern="[0-9]*" maxlength="4" value="${cantidad}" aria-label="Cantidad de ${esc(p.nombre)}"><button class="mas" data-p="${p.id}" aria-label="Agregar uno">+</button></div>
+        <div class="vp-info"><div class="vp-nombre">${esc(nomV(p))}</div>
+          <div class="vp-meta"><button class="vp-precio${mod?' mod':''}" data-pr="${p.id}" aria-label="Cambiar precio">${Q(precioVenta(p))} ✎</button>${aCredito(p)?'<span class="vp-stock cr">A crédito</span>':esCliente(p)?'':`<span class="vp-stock ${stock<=0?'agotado':''}">${stock>0?stock+' disponibles':'Agotado'}</span>`}</div></div>
+        <div class="cant"><button data-m="${p.id}" aria-label="Quitar uno">−</button><input class="qty" data-q="${p.id}" inputmode="numeric" pattern="[0-9]*" maxlength="4" value="${cantidad}" aria-label="Cantidad de ${esc(nomV(p))}"><button class="mas" data-p="${p.id}" aria-label="Agregar uno">+</button></div>
       </article>`;
-    }).join('')||'<div class="vacio">No hay productos en esta categoría.</div>'}</div>
+  };
+  const SUBS=['Nachos y fajitas','Pizzas','Canastas y chalupas','Botanas','Otras frituras'];
+  const subDe=p=>/nacho|fajita/i.test(p.nombre)?SUBS[0]:/pizz/i.test(p.nombre)?SUBS[1]:/canasta|chalupa/i.test(p.nombre)?SUBS[2]:/mopa|papalina/i.test(p.nombre)?SUBS[3]:SUBS[4];
+  const porSub=l=>SUBS.map(t=>({t,l:l.filter(p=>subDe(p)===t)})).filter(g=>g.l.length);
+  let grupos;
+  if(cli)grupos=[{t:'',l:lista}];
+  else if(catV==='Todos'){
+    const orden=[...CATS.filter(c=>c!=='Clientes'),...[...new Set(lista.map(p=>p.cat))].filter(c=>!CATS.includes(c))];
+    grupos=orden.flatMap(c=>{const l=lista.filter(p=>c==='Tortilla'?(p.cat==='Tortilla'||esCliente(p)):p.cat===c);
+      return !l.length?[]:c==='Frituras'?porSub(l).map(g=>({t:'Frituras · '+g.t,l:g.l})):[{t:c,l}]});
+  }else if(catV==='Frituras')grupos=porSub(lista);
+  else grupos=lista.length?[{t:'',l:lista}]:[];
+  return `<section class="venta-shell">
+    <div class="seg" id="canal">${Object.entries(CANAL_SEL).map(([k,v])=>`<button data-k="${k}" class="${k===canalV?'on':''} ${k==='pedidosya'?'py':k==='credito'?'cl':''}">${v}</button>`).join('')}</div>
+    ${cli?'<p class="nota" style="margin:-2px 0 10px">Estas ventas quedan como <b>tortilla al crédito</b>: se cobran en la pestaña <b>Crédito</b>.</p>':`<div class="chips">${cats().map(c=>`<button data-c="${esc(c)}" class="${c===catV?'on':''}">${esc(c)}</button>`).join('')}</div>`}
+    ${grupos.map(g=>`${g.t?`<h3 class="vg">${esc(g.t)}</h3>`:''}<div class="venta-menu">${g.l.map(tarjeta).join('')}</div>`).join('')||'<div class="vacio">No hay productos en esta categoría.</div>'}
     ${cli?logClientes():''}
-    <div class="total"><div><span>${n} producto${n===1?'':'s'} · ${CANAL_SEL[canalV]}</span><b>${Q(totalFinal())}</b><div class="ajrow"><button class="ajtot" id="ajtot" aria-label="Cambiar total a cobrar" ${n?'':'disabled'}>✎ Total</button><em class="orig">${totalV!=null&&totalV!==totalCarro()?'Normal '+Q(totalCarro()):''}</em></div></div><button class="btn r" id="cobrar" ${n?'':'disabled'}>Registrar</button></div>
+    <div class="total"><div><span>${n} producto${n===1?'':'s'} · ${CANAL_SEL[canalV]}</span><b>${Q(totalFinal())}</b></div><button class="btn r" id="cobrar" ${n?'':'disabled'}>Ver pedido</button></div>
   </section>`;
 }
 function logClientes(){
@@ -544,11 +601,10 @@ function logClientes(){
 }
 function refrescarTotal(){
   const n=Object.values(carro).reduce((a,c)=>a+c,0),t=document.querySelector('.venta-shell .total');if(!t)return;
-  t.querySelector('span').textContent=n+' producto'+(n===1?'':'s')+' · '+CANAL_SEL[canalV];
   if(!n)totalV=null;
+  t.querySelector('span').textContent=n+' producto'+(n===1?'':'s')+' · '+CANAL_SEL[canalV];
   t.querySelector('b').textContent=Q(totalFinal());
-  t.querySelector('.orig').textContent=totalV!=null&&totalV!==totalCarro()?'Normal '+Q(totalCarro()):'';
-  document.getElementById('cobrar').disabled=!n;document.getElementById('ajtot').disabled=!n;
+  document.getElementById('cobrar').disabled=!n;
   document.querySelectorAll('.venta-producto').forEach(a=>a.classList.toggle('sel',!!carro[a.dataset.id]));
 }
 function setCant(id,c){
@@ -561,10 +617,8 @@ function setCant(id,c){
 function bVender(){
   const v=document.getElementById('vista');
   document.getElementById('canal').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.k;
-    if((k==='credito')!==(canalV==='credito'))Object.keys(carro).forEach(id=>{if(esCliente(prod(id))!==(k==='credito'))delete carro[id]});
+    Object.keys(carro).forEach(id=>{const c=esCliente(prod(id));if(k==='credito'?!c:(c&&canalV==='credito'))delete carro[id]});
     precioV={};totalV=null;canalV=k;keep(()=>render())};
-  const vn=document.getElementById('vn');if(vn)vn.oninput=e=>{notaV=e.target.value};
-  const vnb=document.getElementById('vnb');if(vnb)vnb.onclick=()=>{notaAbierta=true;render();const x=document.getElementById('vn');if(x)x.focus()};
   const chips=v.querySelector('.chips');if(chips)chips.onclick=e=>{const b=e.target.closest('button');if(b){catV=b.dataset.c;render()}};
   v.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>setCant(b.dataset.p,(carro[b.dataset.p]||0)+1));
   v.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>setCant(b.dataset.m,(carro[b.dataset.m]||0)-1));
@@ -585,37 +639,93 @@ function bVender(){
     inp.onblur=()=>cerrar(true);
     inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();cerrar(true)}else if(e.key==='Escape')cerrar(false)};
   });
-  document.getElementById('ajtot').onclick=e=>{
-    const btn=e.currentTarget,inp=document.createElement('input');
-    inp.className='pr-in tot-in';inp.inputMode='decimal';inp.placeholder='Total a cobrar Q';inp.value=String(totalFinal());inp.setAttribute('aria-label','Total a cobrar');
-    btn.replaceWith(inp);inp.focus();setTimeout(()=>inp.select(),0);
-    let fin=false;const cerrar=ok=>{if(fin)return;fin=true;
-      if(ok){const raw=inp.value.trim(),x=num(raw);
-        if(raw===''||!isFinite(x)||x<0||Math.abs(x-totalCarro())<0.004)totalV=null;else totalV=Math.round(x*100)/100}
-      keep(()=>render())};
-    inp.onblur=()=>cerrar(true);
-    inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();cerrar(true)}else if(e.key==='Escape')cerrar(false)};
-  };
-  document.getElementById('cobrar').onclick=()=>{
-    const tot=totalFinal();
-    if(canalV==='tienda')abrirCobro(tot,registrar);else registrar();
-  };
+  document.getElementById('cobrar').onclick=abrirPedido;
+}
+function repartir(){
+  const lin=Object.entries(carro);
+  const objetivo=lin.map(([id,c])=>Math.round(c*precioVenta(prod(id))*100));
+  const sc=objetivo.reduce((a,x)=>a+x,0),tc=Math.round(totalFinal()*100);
+  if(tc!==sc){const orig=objetivo.slice();let acum=0;
+    lin.forEach((_,i)=>{if(i===lin.length-1)objetivo[i]=Math.max(0,tc-acum);else{objetivo[i]=sc?Math.round(tc*orig[i]/sc):(i===0?tc:0);acum+=objetivo[i]}})}
+  return {lin,objetivo,tc,sc};
+}
+const efectivoPedido=()=>{const r=repartir();return r.lin.reduce((a,[id],i)=>a+(aCredito(prod(id))?0:r.objetivo[i]),0)/100};
+const $id=x=>document.getElementById(x);
+let pagaV='';
+const phNota=()=>canalV==='credito'?'Nombre del cliente':canalV==='transferencia'?'Quién transfirió / referencia':canalV==='tarjeta'?'Referencia (opcional)':canalV==='pedidosya'?'N.º de pedido (opcional)':'Nota (opcional)';
+function abrirPedido(){
+  if(!Object.keys(carro).length)return;
+  pagaV='';pintarPedido();$id('pedido').classList.remove('hide');
+}
+function cerrarPedido(){$id('pedido').classList.add('hide')}
+function pintarPedido(){
+  $id('ped-body').innerHTML=`<div class="ped-h"><div><h2>Pedido</h2><span class="ped-canal">${esc(CANAL_SEL[canalV])}</span></div><button class="ped-x" id="ped-x" aria-label="Cerrar">✕</button></div>
+    <div class="ped-sc">
+      <section class="ped-sec"><h3 class="ped-t"><i>1</i> Lo que lleva</h3><div id="ped-lin"></div></section>
+      <section class="ped-sec"><h3 class="ped-t"><i>2</i> ${canalV==='credito'?'Nombre del cliente':'Nota'} <small>(opcional)</small></h3>
+        <input id="ped-nota" maxlength="60" placeholder="${phNota()}" value="${esc(notaV)}" autocomplete="off"></section>
+      <section class="ped-sec"><h3 class="ped-t"><i>3</i> Total a cobrar</h3>
+        <input id="ped-cobrar" class="ped-grande" inputmode="decimal" value="${totalFinal()}" autocomplete="off">
+        <p class="ped-ayuda">Si cobras distinto al total, escribe aquí lo que cobraste.</p><p class="ped-dif" id="ped-dif"></p></section>
+      <section class="ped-sec" id="ped-pago-sec"><div id="ped-pago"></div></section>
+    </div>
+    <div class="ped-f"><div class="ped-ft"><span>Total</span><b id="ped-big">${Q(totalFinal())}</b></div>
+      <button class="btn" id="ped-ok">Registrar venta</button>
+      <button class="ped-volver" id="ped-no">← Seguir agregando</button></div>`;
+  $id('ped-x').onclick=$id('ped-no').onclick=cerrarPedido;
+  $id('ped-nota').oninput=e=>{notaV=e.target.value};
+  $id('ped-cobrar').oninput=e=>{const raw=e.target.value.trim(),x=num(raw);
+    totalV=(raw===''||!isFinite(x)||x<0||Math.abs(x-totalCarro())<0.004)?null:Math.round(x*100)/100;pintarPago();refrescarTotal()};
+  $id('ped-ok').onclick=()=>{const v=vueltoPedido();if(v===null)return;cerrarPedido();registrar(v)};
+  pintarLineas();pintarPago();
+}
+function pintarLineas(){
+  $id('ped-lin').innerHTML=Object.entries(carro).map(([id,c])=>{const p=prod(id);
+    return `<div class="ped-l"><div class="ped-n"><b>${esc(nomV(p))}</b><small>${Q(precioVenta(p))} c/u${aCredito(p)?' · crédito':''}</small></div>
+      <div class="ped-s"><button data-pm="${id}" aria-label="Quitar uno">−</button><span>${c}</span><button data-pp="${id}" aria-label="Agregar uno">+</button></div>
+      <b class="ped-m">${Q(c*precioVenta(p))}</b></div>`}).join('');
+  const cambia=(id,d)=>{setCant(id,(carro[id]||0)+d);if(!Object.keys(carro).length){cerrarPedido();return}
+    pintarLineas();$id('ped-cobrar').value=totalFinal();pintarPago()};
+  $id('ped-lin').querySelectorAll('[data-pm]').forEach(b=>b.onclick=()=>cambia(b.dataset.pm,-1));
+  $id('ped-lin').querySelectorAll('[data-pp]').forEach(b=>b.onclick=()=>cambia(b.dataset.pp,1));
+}
+function pintarPago(){
+  const n=totalCarro(),f=totalFinal(),d=Math.round((f-n)*100)/100;
+  $id('ped-dif').innerHTML=d===0?'':`<span style="color:${d<0?'var(--red)':'var(--green)'}">${d<0?'Descuento':'Recargo'} ${Q2(Math.abs(d))}</span> · total normal ${Q2(n)}`;
+  const ef=efectivoPedido(),cr=Math.round((f-ef)*100)/100;
+  let h='';
+  if(cr>0)h+=`<p class="ped-cr">A crédito: <b>${Q2(cr)}</b> (se cobra después en la pestaña Crédito)</p>`;
+  if(canalV==='tienda'&&ef>0){
+    const bill=[...new Set([1,5,10,20,50,100,200].filter(b=>b>=ef))].slice(0,5);
+    h+=`<h3 class="ped-t"><i>4</i> Pago en efectivo <small>(${Q2(ef)})</small></h3>
+      <label for="ped-paga">¿Con cuánto paga?</label>
+      <input id="ped-paga" inputmode="decimal" placeholder="Q" autocomplete="off" value="${esc(pagaV)}">
+      <div class="bill" id="ped-bill"><button class="ex" data-v="${ef}">Exacto</button>${bill.map(b=>`<button data-v="${b}">Q${b}</button>`).join('')}</div>
+      <div class="vuelto nada" id="ped-vuelto"></div>`;
+  }
+  $id('ped-pago').innerHTML=h;$id('ped-pago-sec').style.display=h?'':'none';$id('ped-big').textContent=Q(f);
+  const pg=$id('ped-paga');
+  if(pg){pg.oninput=()=>{pagaV=pg.value;vueltoPedido()};
+    $id('ped-bill').onclick=e=>{const b=e.target.closest('button');if(b){pg.value=pagaV=b.dataset.v;vueltoPedido()}}}
+  vueltoPedido();
+}
+/* pinta el vuelto; devuelve el vuelto (0 si no aplica) o null si falta dinero */
+function vueltoPedido(){
+  const v=$id('ped-vuelto'),ok=$id('ped-ok');if(!ok)return 0;
+  if(!v){ok.disabled=false;return 0}
+  const ef=efectivoPedido(),raw=pagaV.trim(),dif=Math.round((num(raw)-ef)*100)/100;
+  if(raw===''){v.className='vuelto nada';v.textContent='Escribe con cuánto paga';ok.disabled=false;return 0}
+  if(dif<0){v.className='vuelto mal';v.innerHTML='<small>Falta</small>'+Q2(-dif);ok.disabled=true;return null}
+  v.className='vuelto ok';v.innerHTML=dif===0?'<small>Vuelto</small>Q0.00 · Pago exacto':'<small>Dar de vuelto</small>'+Q2(dif);ok.disabled=false;return dif;
 }
 function registrar(vuelto){
   const faltan=Object.entries(carro).filter(([id,c])=>!esCliente(prod(id))&&c>stockDe(id)).map(([id])=>prod(id).nombre);
   if(faltan.length&&!confirm('No hay stock suficiente de:\n• '+faltan.join('\n• ')+'\n\n¿Registrar la venta de todos modos?'))return;
   const ts=Date.now(),nota=notaV.trim(),lista=Math.round(totalLista()*100)/100,sub=Math.round(totalCarro()*100)/100,t=Math.round(totalFinal()*100)/100;
-  const lin=Object.entries(carro);
-  /* total ajustado: reparte el total final entre las líneas, en centavos exactos */
-  const objetivo=lin.map(([id,c])=>Math.round(c*precioVenta(prod(id))*100));
-  let tc=Math.round(t*100),sc=objetivo.reduce((a,x)=>a+x,0);
-  if(tc!==sc){
-    const orig=objetivo.slice();let acum=0;
-    lin.forEach((_,i)=>{if(i===lin.length-1)objetivo[i]=Math.max(0,tc-acum);else{objetivo[i]=sc?Math.round(tc*orig[i]/sc):(i===0?tc:0);acum+=objetivo[i]}});
-  }
+  const {lin,objetivo,tc,sc}=repartir();
   const marca=Math.abs(t-lista)>0.004?'~L'+lista.toFixed(2):'';
   const tk=nid()+marca;let k=0;
-  lin.forEach(([id,c],i)=>{const p=prod(id),cn=esCliente(p)?'credito':(canalV==='credito'?'tienda':canalV);
+  lin.forEach(([id,c],i)=>{const p=prod(id),cn=aCredito(p)?'credito':(canalV==='credito'?'tienda':canalV);
     const add=(cant,precio)=>op({op:'addMov',mov:{id:nid(),ts:ts+(k++),pid:id,tipo:'venta',cant,precio,nota,canal:cn,ticket:tk}});
     if(tc===sc&&Math.abs(c*precioVenta(p)*100-objetivo[i])<0.5){add(c,precioVenta(p));return}
     const T=objetivo[i],u=Math.floor(T/c),R=T-u*c;
@@ -650,7 +760,8 @@ document.getElementById('cb-paga').addEventListener('input',pintarCobro);
 document.getElementById('cb-bill').addEventListener('click',e=>{const b=e.target.closest('button');if(b){document.getElementById('cb-paga').value=b.dataset.v;pintarCobro()}});
 document.getElementById('cb-no').onclick=cerrarCobro;
 document.getElementById('cobro').addEventListener('click',e=>{if(e.target.id==='cobro')cerrarCobro()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarCobro();cerrarPago()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarCobro();cerrarPago();cerrarPedido()}});
+$id('pedido').addEventListener('click',e=>{if(e.target.id==='pedido')cerrarPedido()});
 document.getElementById('cb-ok').onclick=()=>{
   const raw=document.getElementById('cb-paga').value,paga=num(raw),vuelto=raw.trim()===''?0:Math.round((paga-cobroTotal)*100)/100;
   cerrarCobro();if(cobroOk)cobroOk(vuelto);
