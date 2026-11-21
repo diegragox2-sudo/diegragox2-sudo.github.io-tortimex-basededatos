@@ -332,7 +332,7 @@ const KEY='tortimex-inventario-v3',KQ='tortimex-cola-v3',KP='tortimex-pin',KR='t
 /* ---------- Catálogo (precio tienda, precio Pedidos Ya) ---------- */
 const CATS=['Tortilla','Tostadas','Tacos','Clientes','Frituras','Lácteos','Bebidas'];
 const TCATS=CATS.filter(c=>c!=='Clientes');
-const CLIENTES=[['Cliente 1','Clientes',5.5,null],['Cliente 2','Clientes',6,null],['Cliente 3','Clientes',7,null],['Cliente 4','Clientes',8,null]];
+const CLIENTES=[['Cliente 1','Clientes',5.5,null],['Cliente 2','Clientes',6,null],['Cliente 3','Clientes',7,null]];
 const SEED=[
  ['Tortilla 1/2 lb','Tortilla',5,5],['Tortilla 1 lb','Tortilla',10,10],
  ['Tostada #10','Tostadas',10,10.5],['Tostada #12','Tostadas',14,17.5],['Tostada #14','Tostadas',15,19],['Tostada #16','Tostadas',18,22.5],
@@ -395,6 +395,10 @@ async function sync(){
       }
       if(S.productos.some(p=>p.cat==='Clientes'&&/^Tortilla Q/.test(p.nombre))){ // vuelven a llamarse Cliente N (el nombre Tortilla se muestra solo en las ventas normales)
         S.productos.forEach(p=>{if(p.cat==='Clientes'&&/^Tortilla Q/.test(p.nombre))p.nombre='Cliente '+(/^c(\d)$/.test(p.id)?p.id.slice(1):(S.productos.filter(x=>x.cat==='Clientes').indexOf(p)+1))});
+        COLA.push({op:'setProductos',productos:copia(S.productos)});setTimeout(sync,300);
+      }
+      if(S.productos.some(p=>p.id==='c4'&&p.cat==='Clientes')&&!S.mov.some(m=>m.pid==='c4')){ // se quitó Tortilla Q8 (Cliente 4)
+        S.productos=S.productos.filter(p=>p.id!=='c4');
         COLA.push({op:'setProductos',productos:copia(S.productos)});setTimeout(sync,300);
       }
       if(S.productos.some(p=>p.cat==='Frituras'&&/^(taco|tostada)/i.test(p.nombre))){ // separar Tacos y Tostadas de Frituras
