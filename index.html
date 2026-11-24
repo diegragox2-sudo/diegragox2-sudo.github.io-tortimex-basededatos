@@ -284,6 +284,33 @@ input:focus,select:focus{outline:3px solid var(--green)}
 
 .vg{margin:18px 0 8px;color:var(--green);font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid var(--line);padding-bottom:6px}
 .vg:first-of-type{margin-top:6px}
+
+/* ===== revisión de pantallas ===== */
+.hf{align-items:flex-start}
+.hf .n small{display:block}
+.hf .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.hf .hq{min-width:58px;text-align:right;flex:none}.hf .hq b{display:block;font-size:1.05rem}.hf .hq small{color:var(--mut);font-weight:700}
+.hf .del{flex:none}
+.edit2{padding:10px 0;border-bottom:1px solid var(--line)}
+.edit2 .nm{width:100%;margin-bottom:8px;text-align:left;padding:10px;font-weight:700}
+.ep{display:grid;grid-template-columns:1fr 1fr 46px;gap:8px;align-items:end}
+.ep label{display:block;margin:0}
+.ep label small{display:block;font:800 .62rem Figtree;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:3px}
+.ep input{text-align:center;padding:9px 4px}
+.ep .x{background:none;border:2px solid var(--red);color:var(--red);border-radius:8px;height:44px;font:800 1rem Figtree;cursor:pointer}
+@media(max-width:480px){
+  header{flex-wrap:wrap;row-gap:4px}
+  .marca-logo{width:98px;height:64px}
+  .fecha{display:flex;flex-wrap:wrap;gap:2px 10px;align-items:center;justify-content:flex-end;flex:1;min-width:0}
+  .fecha #hoy{flex:1 0 100%;text-align:right}
+  .fecha #est{margin-top:0!important}
+  nav button{font-size:8.5px;min-width:0;padding:10px 0 9px}
+  .venta-shell .total span{white-space:nowrap;font-size:.7rem}
+  .venta-shell .total .btn{padding:13px 12px;font-size:1rem}
+}
+
+.venta-menu{grid-auto-rows:1fr}
+.venta-producto .vp-meta{flex-wrap:wrap;row-gap:4px}
 </style>
 </head>
 <body>
@@ -574,7 +601,7 @@ function vVender(){
       return `<article class="venta-producto${cantidad?' sel':''}" data-id="${p.id}">
         <div class="vp-icon" aria-hidden="true">${icono(p)}</div>
         <div class="vp-info"><div class="vp-nombre">${esc(nomV(p))}</div>
-          <div class="vp-meta"><button class="vp-precio${mod?' mod':''}" data-pr="${p.id}" aria-label="Cambiar precio">${Q(precioVenta(p))} ✎</button>${aCredito(p)?'<span class="vp-stock cr">A crédito</span>':esCliente(p)?'':`<span class="vp-stock ${stock<=0?'agotado':''}">${stock>0?stock+' disponibles':'Agotado'}</span>`}</div></div>
+          <div class="vp-meta"><button class="vp-precio${mod?' mod':''}" data-pr="${p.id}" aria-label="Cambiar precio">${Q(precioVenta(p))} ✎</button>${aCredito(p)?'<span class="vp-stock cr">A crédito</span>':esCliente(p)?'':`<span class="vp-stock ${stock<=0?'agotado':''}">${stock>0?'Quedan '+stock:'Agotado'}</span>`}</div></div>
         <div class="cant"><button data-m="${p.id}" aria-label="Quitar uno">−</button><input class="qty" data-q="${p.id}" inputmode="numeric" pattern="[0-9]*" maxlength="4" value="${cantidad}" aria-label="Cantidad de ${esc(nomV(p))}"><button class="mas" data-p="${p.id}" aria-label="Agregar uno">+</button></div>
       </article>`;
   };
@@ -1042,7 +1069,7 @@ function vHist(){
   const ms=S.mov.filter(m=>dia(new Date(m.ts))===fechaH).sort((a,b)=>b.ts-a.ts);
   return `<h2>Historial</h2>
   <input type="date" id="fh" value="${fechaH}" max="${dia()}" aria-label="Fecha">
-  <div class="panel" style="margin-top:14px">${ms.map(m=>{const p=prod(m.pid),cn=canalDe(m);return `<div class="fila"><div class="n"><b>${esc(p?p.nombre:'(borrado)')}</b><small>${hora(m.ts)}${m.nota?' · '+esc(m.nota):''}${m.tipo==='venta'&&canalDe(m)==='credito'?(m.pagado?' · pagado':' · por cobrar'):''}</small></div>${m.tipo==='venta'&&cn!=='tienda'?`<span class="tag ${CTAG[cn]}">${CANAL_LBL[cn]}</span>`:''}<span class="tag ${m.tipo}">${m.tipo}</span><div style="min-width:54px;text-align:right"><b>${m.tipo==='entrada'?'+':'−'}${m.cant}</b>${m.tipo==='venta'?`<br><small style="color:var(--mut)">${Q(m.cant*m.precio)}</small>`:''}</div><button class="del" data-d="${m.id}" aria-label="Eliminar registro">✕</button></div>`}).join('')||'<div class="vacio">Sin movimientos este día</div>'}</div>
+  <div class="panel" style="margin-top:14px">${ms.map(m=>{const p=prod(m.pid),cn=canalDe(m);return `<div class="fila hf"><div class="n"><b>${esc(p?p.nombre:'(borrado)')}</b><small>${hora(m.ts)}${m.nota?' · '+esc(m.nota):''}${m.tipo==='venta'&&canalDe(m)==='credito'?(m.pagado?' · pagado':' · por cobrar'):''}</small><div class="tags"><span class="tag ${m.tipo}">${m.tipo}</span>${m.tipo==='venta'&&cn!=='tienda'?`<span class="tag ${CTAG[cn]}">${CANAL_LBL[cn]}</span>`:''}</div></div><div class="hq"><b>${m.tipo==='entrada'?'+':'−'}${m.cant}</b>${m.tipo==='venta'?`<small>${Q(m.cant*m.precio)}</small>`:''}</div><button class="del" data-d="${m.id}" aria-label="Eliminar registro">✕</button></div>`}).join('')||'<div class="vacio">Sin movimientos este día</div>'}</div>
   <h3>Descargar</h3>
   <div class="panel r"><button class="btn g" id="xls" style="border:3px solid #fff">Excel con todos los movimientos (.xlsx)</button>
   <p class="nota">Archivo de Excel de verdad, con columnas ordenadas. Los datos quedan guardados en la base de datos; esto es solo una copia para revisar.</p></div>`;
@@ -1065,8 +1092,7 @@ function bHist(){
 /* ---------- Productos ---------- */
 function vProd(){
   return `<h2>Productos</h2>
-  <div class="panel"><div class="edit"><span class="cab">Producto</span><span class="cab">Tienda Q</span><span class="cab">P. Ya Q</span><span></span></div>
-  ${S.productos.map(p=>`<div class="edit"><input class="nm" value="${esc(p.nombre)}" maxlength="50" data-nm="${p.id}" aria-label="Nombre"><input type="number" step="0.25" min="0" value="${p.precio}" data-pr="${p.id}" aria-label="Precio">${esCliente(p)?'<span></span>':`<input type="number" step="0.5" min="0" value="${p.pp==null?'':p.pp}" placeholder="—" data-pp="${p.id}" aria-label="Precio Pedidos Ya">`}<button class="x" data-del="${p.id}" aria-label="Borrar producto">✕</button></div>`).join('')}
+  <div class="panel">${[...CATS,...new Set(S.productos.map(p=>p.cat).filter(c=>!CATS.includes(c)))].map(c=>{const l=S.productos.filter(p=>p.cat===c);return l.length?`<h3 class="vg">${esc(c==='Clientes'?'Clientes (a crédito)':c)}</h3>`+l.map(p=>`<div class="edit2"><input class="nm" value="${esc(p.nombre)}" maxlength="50" data-nm="${p.id}" aria-label="Nombre"><div class="ep"><label><small>Tienda Q</small><input type="number" step="0.25" min="0" value="${p.precio}" data-pr="${p.id}" aria-label="Precio"></label>${esCliente(p)?'<span></span>':`<label><small>Pedidos Ya Q</small><input type="number" step="0.5" min="0" value="${p.pp==null?'':p.pp}" placeholder="—" data-pp="${p.id}" aria-label="Precio Pedidos Ya"></label>`}<button class="x" data-del="${p.id}" aria-label="Borrar producto">✕</button></div></div>`).join(''):''}).join('')}
   <p class="nota">Toca un nombre o un precio para cambiarlo; se guarda solo y le llega a todos. “P. Ya” es el precio en Pedidos Ya; si lo dejas vacío se usa el de tienda. Solo se puede borrar un producto que no tenga movimientos.</p></div>
   <h3>Agregar producto</h3>
   <div class="panel r"><label for="np">Nombre</label><input id="np" maxlength="50">
