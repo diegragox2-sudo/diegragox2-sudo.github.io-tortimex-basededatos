@@ -574,7 +574,7 @@ const ic={
  his:'<path d="M13 3a9 9 0 00-9 9H1l4 4 4-4H6a7 7 0 117 7 7 7 0 01-5-2l-1.4 1.4A9 9 0 1013 3zm-1 5v5l4.3 2.5.8-1.3-3.6-2.1V8z"/>',
  pro:'<path d="M12 2L3 7v10l9 5 9-5V7zm0 2.2l6.5 3.6L12 11.4 5.5 7.8zM5 9.5l6 3.3v6.9l-6-3.3zm14 0v6.9l-6 3.3v-6.9z"/>'
 };
-const TABS=[['res','Inicio'],['ven','Vender'],['mov','Entradas'],['cre','Crédito'],['cie','Cierre'],['his','Historial'],['pro','Productos']];
+const TABS=[['res','Stock'],['ven','Vender'],['mov','Entradas'],['cre','Crédito'],['cie','Cierre'],['his','Historial'],['pro','Productos']];
 let tab='ini',volverA=null;
 document.getElementById('nav').innerHTML=TABS.map(t=>`<button data-t="${t[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic[t[0]]}</svg>${t[1]}</button>`).join('');
 
@@ -601,7 +601,7 @@ function vInicio(){
     <button class="hb hb-v" data-go="ven"><span class="hi">🛒</span><span><b>Vender</b><small>Abrir el menú de ventas</small></span></button>
     <button class="hb hb-m" data-go="mov"><span class="hi">📦</span><span><b>Entradas y salidas</b><small>Producción, desperdicio, regalos</small></span></button>
     ${tarde?`<button class="hb hb-c" data-go="cie"><span class="hi">🧾</span><span><b>Cierre de caja</b><small>Hacer el cierre de hoy, paso por paso</small></span></button>`:''}
-    <div class="home-mas"><span>Más</span><button data-go="res">Resumen y stock</button><button data-go="cre">Crédito</button><button data-go="his">Historial</button><button data-go="pro">Productos</button>${tarde?'':'<button data-go="cie">Cierre de caja</button>'}</div>
+    <div class="home-mas"><span>Más</span><button data-go="res">Stock</button><button data-go="cre">Crédito</button><button data-go="his">Historial</button><button data-go="pro">Productos</button>${tarde?'':'<button data-go="cie">Cierre de caja</button>'}</div>
   </div>`;
 }
 function bInicio(){
@@ -612,11 +612,6 @@ function bInicio(){
 let fechaRes=dia(),verStock=false;
 const N_STOCK=5,N_FALTA=4;
 function vResumen(){
-  const c=cierre(fechaRes);
-  const ms=S.mov.filter(m=>dia(new Date(m.ts))===fechaRes);
-  const vend=c.tot1+c.tpy+c.ttr+c.ttj+c.tcr;
-  const uni=ms.filter(m=>m.tipo==='venta').reduce((a,m)=>a+m.cant,0);
-  const ent=ms.filter(m=>m.tipo==='entrada').reduce((a,m)=>a+m.cant,0);
   const ps=S.productos.filter(p=>!esCliente(p));
   const orden=[...CATS.filter(x=>x!=='Clientes'),...[...new Set(ps.map(p=>p.cat))].filter(x=>!CATS.includes(x))];
   const lista=[];orden.forEach(cat=>ps.filter(p=>p.cat===cat).forEach(p=>lista.push(p)));
@@ -627,30 +622,12 @@ function vResumen(){
     const cab=p.cat!==cat?`<div class="scat">${esc(p.cat)}</div>`:'';cat=p.cat;
     return cab+`<div class="fila"><div class="n"><b>${esc(p.nombre)}</b></div><span class="stock ${n>0?'ok':'cero'}">${n>0?n+' en stock':'Agotado'+(n<0?' ('+n+')':'')}</span></div>`}).join('');
   const hayMas=lista.length>N_STOCK||falta.length>N_FALTA;
-  return `<h2>Inicio</h2>
-  <h3 style="margin-top:4px">Ventas del día</h3>
-  <input type="date" id="fres" value="${fechaRes}" max="${dia()}" aria-label="Fecha">
-  <div class="kpis" style="margin-top:14px">
-   <div class="kpi"><span>Vendido</span><b>${Q(vend)}</b></div>
-   <div class="kpi"><span>Unidades</span><b>${uni}</b></div>
-   <div class="kpi r"><span>Entradas</span><b>${ent}</b></div>
-   <div class="kpi r"><span>Salidas / merma</span><b>${c.desperdicio}</b></div>
-  </div>
-  <div class="panel" style="margin-top:14px">
-   <div class="resu"><span>Tienda</span><span>${Q2(c.tot1)}</span></div>
-   <div class="resu"><span>Pedidos Ya</span><span>${Q2(c.tpy)}</span></div>
-   <div class="resu"><span>Transferencia</span><span>${Q2(c.ttr)}</span></div>
-   <div class="resu"><span>Venta con tarjeta de crédito</span><span>${Q2(c.ttj)}</span></div>
-   <div class="resu"><span>Tortilla al crédito</span><span>${Q2(c.tcr)}</span></div>
-   <div class="resu t"><span>Total</span><span>${Q2(vend)}</span></div>
-  </div>
-  <h3>Stock</h3>
+  return `<h2>Stock</h2>
   ${falta.length?`<div class="alerta" role="alert"><b>HACE FALTA</b><span>${visFalta.map(p=>esc(p.nombre)).join(' · ')}${!verStock&&falta.length>N_FALTA?` · y ${falta.length-N_FALTA} más`:''}</span></div>`:'<div class="alerta ok"><b>Todo en stock ✔</b></div>'}
   <div class="panel sgrid">${filas||'<div class="vacio">Sin productos</div>'}</div>
   ${hayMas?`<button class="btn g" id="mas" style="border:3px solid #fff">${verStock?'Mostrar menos':'Mostrar más ('+(lista.length-N_STOCK)+' productos)'}</button>`:''}`;
 }
 function bResumen(){
-  document.getElementById('fres').onchange=e=>{fechaRes=e.target.value||dia();render()};
   const m=document.getElementById('mas');if(m)m.onclick=()=>{verStock=!verStock;keep(()=>render())};
 }
 
@@ -900,8 +877,9 @@ function vMov(){
     <div class="seg tipo2" id="tipo"><button data-t="entrada" class="${!sal?'on':''}">➕ Entrada</button><button data-t="salida" class="${sal?'on s':''}">➖ Salida / desperdicio</button></div>
     <div class="chips">${cs.map(c=>`<button data-c="${esc(c)}" class="${c===catM?'on':''}">${esc(c)}</button>`).join('')}</div></div>
     <p class="nota" style="margin:10px 0 4px">${sal?'Escribe cuánto se perdió, se regaló o se sacó de cada producto. Los que dejes en 0 no se tocan.':'Escribe cuánto se hizo o llegó de cada producto. Los que dejes en 0 no se tocan.'}</p>
+    <div class="panel" style="margin:8px 0 6px"><label for="mn" style="display:block;font-weight:800;font-size:1.05em;margin-bottom:6px">📝 Nota ${sal?'de la salida':'de la entrada'}</label>
     <div class="chips" id="notasM">${NOTAS_M[tipoM].map(t=>`<button data-n="${esc(t)}">${esc(t)}</button>`).join('')}</div>
-    <input id="mn" maxlength="60" value="${esc(notaM)}" placeholder="${sal?'Motivo (opcional)':'Nota (opcional)'}" style="margin:8px 0 4px" aria-label="Nota">
+    <input id="mn" maxlength="120" value="${esc(notaM)}" placeholder="${sal?'Escribe el motivo: se quemó, regalo, se cayó…':'Escribe una nota (opcional)'}" style="margin:8px 0 0" aria-label="Nota"></div>
     ${gruposMov(ps,catM).map(g=>`${g.t?`<h3 class="vg">${esc(g.t)}</h3>`:''}<div class="venta-menu">${g.l.map(tarjetaM).join('')}</div>`).join('')}
     <div class="total"><div><span id="lt-n">${n} producto${n===1?'':'s'} · ${u} unidad${u===1?'':'es'}</span><b>${sal?'Salida':'Entrada'}</b></div><button class="btn ${sal?'r':''}" id="gm" ${n?'':'disabled'}>Guardar ${sal?'salida':'entrada'}</button></div>
   </section>`;
