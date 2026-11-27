@@ -420,7 +420,7 @@ body[data-t=ven] .venta-shell,body[data-t=mov] .venta-shell{border:0;box-shadow:
 .venta-producto .cant{grid-column:auto!important;background:transparent!important;border:0!important;padding:0!important;gap:6px!important}
 .venta-producto .cant button{width:48px!important;height:48px!important;font-size:1.7rem!important;border-width:2px!important}
 .venta-producto .cant .qty{flex:none!important;width:46px!important;font-size:1.7rem!important}
-.venta-producto:not(.sel) .cant button:not(.mas),.venta-producto:not(.sel) .cant .qty{visibility:hidden}
+.venta-producto:not(.sel) .cant .qty{color:var(--mut)!important}
 .venta-producto{grid-template-columns:42px 1fr auto!important;column-gap:10px!important}
 .venta-producto .vp-icon{height:42px!important;width:42px!important;font-size:1.3rem!important}
 .venta-producto .vp-nombre{font-size:1rem!important}
@@ -484,7 +484,7 @@ const CATS=['Tortilla','Tostadas','Tacos','Clientes','Frituras','Lácteos','Bebi
 const TCATS=CATS.filter(c=>c!=='Clientes');
 const CLIENTES=[['Cliente 1','Clientes',5.5,null],['Cliente 2','Clientes',6,null],['Cliente 3','Clientes',7,null]];
 const SEED=[
- ['Tortilla 1/2 lb','Tortilla',5,5],['Tortilla 1 lb','Tortilla',10,10],
+ ['Tortilla Grande No.14 · 1/2 lb','Tortilla',5,5],['Tortilla Grande No.14 · 1 lb','Tortilla',10,10],
  ['Tostada #10','Tostadas',10,10.5],['Tostada #12','Tostadas',14,17.5],['Tostada #14','Tostadas',15,19],['Tostada #16','Tostadas',18,22.5],
  ['Taco Cerrado Simple','Tacos',10,12.5],['Taco Cerrado BBQ','Tacos',11,null],['Taco Abierto Simple','Tacos',18,22.5],['Taco Abierto BBQ','Tacos',19,null],
  ['Nacho Simple 1 lb','Frituras',18,22.5],['Nacho BBQ 1 lb','Frituras',18,null],['Fajitas 1 lb','Frituras',18,null],['Pizzetas','Frituras',18,null],
@@ -554,6 +554,23 @@ async function sync(){
         S.productos.forEach(p=>{if(p.cat==='Frituras'&&/^(taco|tostada)/i.test(p.nombre))p.cat=/^taco/i.test(p.nombre)?'Tacos':'Tostadas'});
         COLA.push({op:'setProductos',productos:copia(S.productos)});setTimeout(sync,300);
       }
+      { // nombres y orden como en la hoja del corte de caja
+        const REG=[[/tostada.*10/i,'Tostada #10'],[/tostada.*12/i,'Tostada #12'],[/tostada.*14/i,'Tostada #14'],[/tostada.*16/i,'Tostada #16'],
+          [/taco cerrado.*(bbq|barbac)/i,'Taco Cerrado BBQ'],[/taco cerrado/i,'Taco Cerrado Simple'],[/taco abierto.*(bbq|barbac)/i,'Taco Abierto BBQ'],[/taco abierto/i,'Taco Abierto Simple'],
+          [/nacho.*(bbq|barbac)/i,'Nacho BBQ 1 lb'],[/nacho/i,'Nacho Simple 1 lb'],[/fajita/i,'Fajitas 1 lb'],[/pizzeta/i,'Pizzetas'],[/canasta/i,'Canastas'],[/chalupa/i,'Chalupas'],
+          [/pizzerola/i,'Pizzerolas'],[/mopa/i,'Mopas'],[/papalina/i,'Papalinas'],[/queso seco/i,'Queso Seco'],[/queso pita/i,'Queso Pita'],[/queso fresco/i,'Queso Fresco'],
+          [/(2\.?0?\s*l|lts|litro)/i,'Coca-Cola 2.0 lts'],[/coca/i,'Coca-Cola lata'],[/mani/i,'ManiMax']];
+        const ORD=REG.map(r=>r[1]);let ch=false;
+        S.productos.forEach(p=>{
+          let n=p.nombre;
+          if(p.cat==='Tortilla')n=/1\/2|media/i.test(p.nombre)?NOM_T2:NOM_T1;
+          else if(p.cat!=='Clientes'){const r=REG.find(r=>r[0].test(p.nombre));if(r&&(p.cat!=='Bebidas'||/coca|mani|lts|lata/i.test(p.nombre)))n=r[1]}
+          if(n!==p.nombre){p.nombre=n;ch=true}});
+        const clave=p=>p.cat==='Tortilla'?0:p.cat==='Clientes'?1:(ORD.indexOf(p.nombre)>=0?10+ORD.indexOf(p.nombre):1000);
+        const ord=S.productos.map((p,i)=>[p,i]).sort((a,b)=>clave(a[0])-clave(b[0])||a[1]-b[1]).map(x=>x[0]);
+        if(ord.some((p,i)=>p!==S.productos[i])){S.productos=ord;ch=true}
+        if(ch){COLA.push({op:'setProductos',productos:copia(S.productos)});setTimeout(sync,300)}
+      }
       guardar();
       if(antes!==JSON.stringify(S))refrescar();
     }
@@ -587,7 +604,8 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const prod=id=>S.productos.find(p=>p.id===id);
 const stockDe=id=>S.mov.reduce((a,m)=>m.pid!==id?a:a+(m.tipo==='entrada'?m.cant:-m.cant),0);
 const esCliente=p=>!!p&&p.cat==='Clientes';
-const nomV=p=>esCliente(p)&&canalV!=='credito'?'Tortilla Q'+(p.precio%1?(+p.precio).toFixed(2):p.precio):p.nombre;
+const NOM_T1='Tortilla Grande No.14 · 1 lb',NOM_T2='Tortilla Grande No.14 · 1/2 lb';
+const nomV=p=>esCliente(p)&&canalV!=='credito'?NOM_T1:p.nombre;
 const aCredito=p=>esCliente(p)&&(canalV==='tienda'||canalV==='credito'); // en Tienda y Clientes se anotan como tortilla al crédito
 const estado=p=>esCliente(p)?'':(stockDe(p.id)<=0?'cero':'');
 const precioDe=(p,canal)=>!esCliente(p)&&canal==='pedidosya'&&p.pp!=null&&p.pp!==''?+p.pp:+p.precio;
